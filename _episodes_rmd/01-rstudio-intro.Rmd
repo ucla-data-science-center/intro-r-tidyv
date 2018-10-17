@@ -128,387 +128,74 @@ shell lessons: it operates on the same idea of a "Read, evaluate,
 print loop": you type in commands, R tries to execute them, and then
 returns a result.
 
-## Using R as a calculator
+#### move to ep 03
+#### add working with data from mdive
 
-The simplest thing you could do with R is do arithmetic:
+## What are R packages? {#packages}
 
-```{r}
-1 + 100
-```
+* Another point of confusion with new R users is the notion of a package. 
+* R packages extend the functionality of R by providing additional functions, data, and documentation and can be downloaded for free from the internet. 
+* They are written by a world-wide community of R users. 
+* For example, among the many packages we will use
 
-And R will print out the answer, with a preceding "[1]". Don't worry about this
-for now, we'll explain that later. For now think of it as indicating output.
+* `ggplot2` package for data visualization
+* `dplyr` package for data wrangling
 
-Like bash, if you type in an incomplete command, R will wait for you to
-complete it:
+There are **two key things** to remember about R packages:
 
-~~~
-> 1 +
-~~~
-{: .r}
+1. *Installation*: Most packages are not installed by default when you install R and RStudio. You need to install a package before you can use it. Once you've installed it, you likely don't need to install it again unless you want to update it to a newer version of the package.
+1. *Loading*: Packages are not loaded automatically when you open RStudio. You need to load them every time you open RStudio using the `library()` command.
 
-~~~
-+
-~~~
-{: .output}
+A good analogy for R packages is they are like apps you can download onto a mobile phone:
 
-Any time you hit return and the R session shows a "+" instead of a ">", it
-means it's waiting for you to complete the command. If you want to cancel
-a command you can simply hit "Esc" and RStudio will give you back the ">"
-prompt.
+R: A new phone           |  R Packages: Apps you can download
+:-------------------------:|:-------------------------:
+![](images/iphone.jpg){ height=1.5in } |  ![](images/apps.jpg){ height=1.5in }
 
-> ## Tip: Cancelling commands
->
-> If you're using R from the commandline instead of from within RStudio,
-> you need to use <kbd>Ctrl</kbd>+<kbd>C</kbd> instead of <kbd>Esc</kbd>
-> to cancel the command. This applies to Mac users as well!
->
-> Cancelling a command isn't only useful for killing incomplete commands:
-> you can also use it to tell R to stop running code (for example if it's
-> taking much longer than you expect), or to get rid of the code you're
-> currently writing.
->
-{: .callout}
+So, expanding on this analogy a bit:
 
-When using R as a calculator, the order of operations is the same as you
-would have learned back in school.
+1. **R is like a new mobile phone**. It has a certain amount of functionality when you use it for the first time, but it doesn't have everything.
+1. **R packages are like the apps** you can download onto your phone, much like those offered in the App Store and Google Play. For example: Instagram. 
+1. In order to use a package, just like in order to use Instagram, you must:
+    1. First download it and install it. You do this only once.
+    1. Load it, or in other words, "open" it, using the `library()` command.
+    
+So just as you can only start sharing photos with your friends on Instagram if you first install the app and then open it, you can only access an R package's data and functions if you first install the package and then load it with the `library()` command. Let's cover these two steps: 
 
-From highest to lowest precedence:
+### Package installation
 
- * Parentheses: `(`, `)`
- * Exponents: `^` or `**`
- * Divide: `/`
- * Multiply: `*`
- * Add: `+`
- * Subtract: `-`
+(Note that if you are working on an RStudio Server, you probably will not need to install your own packages as that has been already done for you.  Still it is important that you know this process for later when you are not using the RStudio Server but rather your own installation of RStudio Desktop.)
 
-```{r}
-3 + 5 * 2
-```
+There are two ways to install an R package. For example, to install the `ggplot2` package:
 
-Use parentheses to group operations in order to force the order of
-evaluation if it differs from the default, or to make clear what you
-intend.
+1. **Easy way**: In the Files pane of RStudio:
+    a) Click on the "Packages" tab
+    a) Click on "Install"
+    a) Type the name of the package under "Packages (separate multiple with space or comma):" In this case, type `ggplot2`
+    a) Click "Install"  
+     ![](images/install_packages_easy_way.png){ height=4in }
+1. **Alternative way**: In the Console pane run `install.packages("ggplot2")` (you must include the quotation marks).
 
-```{r}
-(3 + 5) * 2
-```
+Repeat this for the `dplyr` and `nycflights13` packages.
 
-This can get unwieldy when not needed, but  clarifies your intentions.
-Remember that others may later read your code.
+**Note**: You only have to install a package once, unless you want to update an already installed package to the latest version. If you want to update a package to the latest version, then re-install it by repeating the above steps.
+
+### Package loading
+
+After you've installed a package, you can now load it using the `library()` command. For example, to load the `ggplot2` and `dplyr` packages, run the following code in the Console pane:
 
 ```{r, eval=FALSE}
-(3 + (5 * (2 ^ 2))) # hard to read
-3 + 5 * 2 ^ 2       # clear, if you remember the rules
-3 + 5 * (2 ^ 2)     # if you forget some rules, this might help
+library(ggplot2)
+library(dplyr)
 ```
 
+**Note**: You have to reload each package you want to use every time you open a new session of RStudio.  This is a little annoying to get used to and will be your most common error as you begin.  When you see an error such as
 
-The text after each line of code is called a
-"comment". Anything that follows after the hash (or octothorpe) symbol
-`#` is ignored by R when it executes code.
-
-Really small or large numbers get a scientific notation:
-
-```{r}
-2/10000
+```
+Error: could not find function
 ```
 
-Which is shorthand for "multiplied by `10^XX`". So `2e-4`
-is shorthand for `2 * 10^(-4)`.
-
-You can write numbers in scientific notation too:
-
-```{r}
-5e3  # Note the lack of minus here
-```
-
-## Mathematical functions
-
-R has many built in mathematical functions. To call a function,
-we simply type its name, followed by  open and closing parentheses.
-Anything we type inside the parentheses is called the function's
-arguments:
-
-```{r}
-sin(1)  # trigonometry functions
-```
-
-```{r}
-log(1)  # natural logarithm
-```
-
-```{r}
-log10(10) # base-10 logarithm
-```
-
-```{r}
-exp(0.5) # e^(1/2)
-```
-
-Don't worry about trying to remember every function in R. You
-can simply look them up on Google, or if you can remember the
-start of the function's name, use the tab completion in RStudio.
-
-This is one advantage that RStudio has over R on its own, it
-has auto-completion abilities that allow you to more easily
-look up functions, their arguments, and the values that they
-take.
-
-Typing a `?` before the name of a command will open the help page
-for that command. As well as providing a detailed description of
-the command and how it works, scrolling to the bottom of the
-help page will usually show a collection of code examples which
-illustrate command usage. We'll go through an example later.
-
-## Comparing things
-
-We can also do comparison in R:
-
-```{r}
-1 == 1  # equality (note two equals signs, read as "is equal to")
-```
-
-```{r}
-1 != 2  # inequality (read as "is not equal to")
-```
-
-```{r}
-1 < 2  # less than
-```
-
-```{r}
-1 <= 1  # less than or equal to
-```
-
-```{r}
-1 > 0  # greater than
-```
-
-```{r}
-1 >= -9 # greater than or equal to
-```
-
-> ## Tip: Comparing Numbers
->
-> A word of warning about comparing numbers: you should
-> never use `==` to compare two numbers unless they are
-> integers (a data type which can specifically represent
-> only whole numbers).
->
-> Computers may only represent decimal numbers with a
-> certain degree of precision, so two numbers which look
-> the same when printed out by R, may actually have
-> different underlying representations and therefore be
-> different by a small margin of error (called Machine
-> numeric tolerance).
->
-> Instead you should use the `all.equal` function.
->
-> Further reading: [http://floating-point-gui.de/](http://floating-point-gui.de/)
->
-{: .callout}
-
-## Variables and assignment
-
-We can store values in variables using the assignment operator `<-`, like this:
-
-```{r}
-x <- 1/40
-```
-
-Notice that assignment does not print a value. Instead, we stored it for later
-in something called a **variable**. `x` now contains the **value** `0.025`:
-
-```{r}
-x
-```
-
-More precisely, the stored value is a *decimal approximation* of
-this fraction called a [floating point number](http://en.wikipedia.org/wiki/Floating_point).
-
-Look for the `Environment` tab in one of the panes of RStudio, and you will see that `x` and its value
-have appeared. Our variable `x` can be used in place of a number in any calculation that expects a number:
-
-```{r}
-log(x)
-```
-
-Notice also that variables can be reassigned:
-
-```{r}
-x <- 100
-```
-
-`x` used to contain the value 0.025 and and now it has the value 100.
-
-Assignment values can contain the variable being assigned to:
-
-```{r}
-x <- x + 1 #notice how RStudio updates its description of x on the top right tab
-y <- x * 2
-```
-
-The right hand side of the assignment can be any valid R expression.
-The right hand side is *fully evaluated* before the assignment occurs.
-
-Variable names can contain letters, numbers, underscores and periods. They
-cannot start with a number nor contain spaces at all. Different people use
-different conventions for long variable names, these include
-
-  * periods.between.words
-  * underscores\_between_words
-  * camelCaseToSeparateWords
-
-What you use is up to you, but **be consistent**.
-
-It is also possible to use the `=` operator for assignment:
-
-```{r}
-x = 1/40
-```
-
-But this is much less common among R users.  The most important thing is to
-**be consistent** with the operator you use. There are occasionally places
-where it is less confusing to use `<-` than `=`, and it is the most common
-symbol used in the community. So the recommendation is to use `<-`.
-
-> ## Challenge 1
->
-> Which of the following are valid R variable names?
-> ```{r, eval=FALSE}
-> min_height
-> max.height
-> _age
-> .mass
-> MaxLength
-> min-length
-> 2widths
-> celsius2kelvin
-> ```
->
-> > ## Solution to challenge 1
-> >
-> > The following can be used as R variables:
-> > ```{r ch1pt1-sol, eval=FALSE}
-> > min_height
-> > max.height
-> > MaxLength
-> > celsius2kelvin
-> > ```
-> >
-> > The following creates a hidden variable:
-> > ```{r ch1pt2-sol, eval=FALSE}
-> > .mass
-> > ```
-> >
-> > The following will not be able to be used to create a variable
-> > ```{r ch1pt3-sol, eval=FALSE}
-> > _age
-> > min-length
-> > 2widths
-> > ```
-> {: .solution}
-{: .challenge}
-
-## Vectorization
-
-One final thing to be aware of is that R is *vectorized*, meaning that
-variables and functions can have vectors as values. In contrast to physics and
-mathematics, a vector in R describes a set of values in a certain order of the 
-same data type. For example
-
-```{r}
-1:5
-2^(1:5)
-x <- 1:5
-2^x
-```
-
-This is incredibly powerful; we will discuss this further in an
-upcoming lesson.
-
-
-## Managing your environment
-
-There are a few useful commands you can use to interact with the R session.
-
-`ls` will list all of the variables and functions stored in the global environment
-(your working R session):
-
-```{r}
-ls()
-```
-
-> ## Tip: hidden objects
->
-> Like in the shell, `ls` will hide any variables or functions starting
-> with a "." by default. To list all objects, type `ls(all.names=TRUE)`
-> instead
->
-{: .callout}
-
-Note here that we didn't give any arguments to `ls`, but we still
-needed to give the parentheses to tell R to call the function.
-
-If we type `ls` by itself, R will print out the source code for that function!
-
-```{r}
-ls
-```
-
-You can use `rm` to delete objects you no longer need:
-
-```{r, eval=FALSE}
-rm(x)
-```
-
-If you have lots of things in your environment and want to delete all of them,
-you can pass the results of `ls` to the `rm` function:
-
-```{r, eval=FALSE}
-rm(list = ls())
-```
-
-In this case we've combined the two. Like the order of operations, anything
-inside the innermost parentheses is evaluated first, and so on.
-
-In this case we've specified that the results of `ls` should be used for the
-`list` argument in `rm`. When assigning values to arguments by name, you *must*
-use the `=` operator!!
-
-If instead we use `<-`, there will be unintended side effects, or you may get an error message:
-
-```{r, error=TRUE}
-rm(list <- ls())
-```
-
-> ## Tip: Warnings vs. Errors
->
-> Pay attention when R does something unexpected! Errors, like above,
-> are thrown when R cannot proceed with a calculation. Warnings on the
-> other hand usually mean that the function has run, but it probably
-> hasn't worked as expected.
->
-> In both cases, the message that R prints out usually give you clues
-> how to fix a problem.
->
-{: .callout}
-
-## R Packages
-
-It is possible to add functions to R by writing a package, or by
-obtaining a package written by someone else. As of this writing, there
-are over 10,000 packages available on CRAN (the comprehensive R archive
-network). R and RStudio have functionality for managing packages:
-
-* You can see what packages are installed by typing
-  `installed.packages()`
-* You can install packages by typing `install.packages("packagename")`,
-  where `packagename` is the package name, in quotes.
-* You can update installed packages by typing `update.packages()`
-* You can remove a package with `remove.packages("packagename")`
-* You can make a package available for use with `library(packagename)`
+remember that this likely comes from you trying to use a function in a package that has not been loaded.  Remember to run the `library()` function with the appropriate package to fix this error.
 
 > ## Challenge 2
 >

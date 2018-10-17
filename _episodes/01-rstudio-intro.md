@@ -1,0 +1,304 @@
+---
+title: "Introduction to R and RStudio"
+teaching: 45
+exercises: 10
+questions:
+- "How to find your way around RStudio?"
+- "How to interact with R?"
+- "How to manage your environment?"
+- "How to install packages?"
+objectives:
+- "Describe the purpose and use of each pane in the RStudio IDE"
+- "Locate buttons and options in the RStudio IDE"
+- "Define a variable"
+- "Assign data to a variable"
+- "Manage a workspace in an interactive R session"
+- "Use mathematical and comparison operators"
+- "Call functions"
+- "Manage packages"
+keypoints:
+- "Use RStudio to write and run R programs."
+- "R has the usual arithmetic operators and mathematical functions."
+- "Use `<-` to assign values to variables."
+- "Use `ls()` to list the variables in a program."
+- "Use `rm()` to delete objects in a program."
+- "Use `install.packages()` to install packages (libraries)."
+source: Rmd
+---
+
+
+
+
+## Motivation
+
+Science is a multi-step process: once you've designed an experiment and collected
+data, the real fun begins! This lesson will teach you how to start this process using
+R and RStudio. We will begin with raw data, perform exploratory analyses, and learn
+how to plot results graphically. This example starts with a dataset from
+[gapminder.org](https://www.gapminder.org) containing population information for many
+countries through time. Can you read the data into R? Can you plot the population for
+Senegal? Can you calculate the average income for countries on the continent of Asia?
+By the end of these lessons you will be able to do things like plot the populations
+for all of these countries in under a minute!
+
+## Before Starting The Workshop
+
+Please ensure you have the latest version of R and RStudio installed on your machine. This is important, as some packages used in the workshop may not install correctly (or at all) if R is not up to date.
+
+[Download and install the latest version of R here](https://www.r-project.org/)
+[Download and install RStudio here](https://www.rstudio.com/)
+
+## Introduction to RStudio
+
+Welcome to the R portion of the Software Carpentry workshop.
+
+Throughout this lesson, we're going to teach you some of the fundamentals of
+the R language as well as some best practices for organizing code for
+scientific projects that will make your life easier.
+
+We'll be using RStudio: a free, open source R integrated development
+environment. It provides a built in editor, works on all platforms (including
+on servers) and provides many advantages such as integration with version
+control and project management.
+
+
+
+**Basic layout**
+
+When you first open RStudio, you will be greeted by three panels:
+
+  * The interactive R console (entire left)
+  * Environment/History (tabbed in upper right)
+  * Files/Plots/Packages/Help/Viewer (tabbed in lower right)
+
+![RStudio layout](../fig/01-rstudio.png)
+
+Once you open files, such as R scripts, an editor panel will also open
+in the top left.
+
+![RStudio layout with .R file open](../fig/01-rstudio-script.png)
+
+
+## Work flow within RStudio
+There are two main ways one can work within RStudio.
+
+1. Test and play within the interactive R console then copy code into
+a .R file to run later.
+   *  This works well when doing small tests and initially starting off.
+   *  It quickly becomes laborious
+2. Start writing in an .R file and use RStudio's short cut keys for the Run command
+to push the current line, selected lines or modified lines to the
+interactive R console.
+   * This is a great way to start; all your code is saved for later
+   * You will be able to run the file you create from within RStudio
+   or using R's `source()`  function.
+
+> ## Tip: Running segments of your code
+>
+> RStudio offers you great flexibility in running code from within the editor
+> window. There are buttons, menu choices, and keyboard shortcuts. To run the
+> current line, you can 
+> 1. click on the `Run` button above the editor panel, or 
+> 2. select "Run Lines" from the "Code" menu, or 
+> 3. hit <kbd>Ctrl</kbd>+<kbd>Return</kbd> in Windows or Linux 
+> or <kbd>&#8984;</kbd>+<kbd>Return</kbd> on OS X.
+> (This shortcut can also be seen by hovering
+> the mouse over the button). To run a block of code, select it and then `Run`.
+> If you have modified a line of code within a block of code you have just run,
+> there is no need to reselct the section and `Run`, you can use the next button
+> along, `Re-run the previous region`. This will run the previous code block
+> including the modifications you have made.
+{: .callout}
+
+## Introduction to R
+
+Much of your time in R will be spent in the R interactive
+console. This is where you will run all of your code, and can be a
+useful environment to try out ideas before adding them to an R script
+file. This console in RStudio is the same as the one you would get if
+you typed in `R` in your command-line environment.
+
+The first thing you will see in the R interactive session is a bunch
+of information, followed by a ">" and a blinking cursor. In many ways
+this is similar to the shell environment you learned about during the
+shell lessons: it operates on the same idea of a "Read, evaluate,
+print loop": you type in commands, R tries to execute them, and then
+returns a result.
+
+#### move to ep 03
+#### add working with data from mdive
+
+## What are R packages? {#packages}
+
+* Another point of confusion with new R users is the notion of a package. 
+* R packages extend the functionality of R by providing additional functions, data, and documentation and can be downloaded for free from the internet. 
+* They are written by a world-wide community of R users. 
+* For example, among the many packages we will use
+
+* `ggplot2` package for data visualization
+* `dplyr` package for data wrangling
+
+There are **two key things** to remember about R packages:
+
+1. *Installation*: Most packages are not installed by default when you install R and RStudio. You need to install a package before you can use it. Once you've installed it, you likely don't need to install it again unless you want to update it to a newer version of the package.
+1. *Loading*: Packages are not loaded automatically when you open RStudio. You need to load them every time you open RStudio using the `library()` command.
+
+A good analogy for R packages is they are like apps you can download onto a mobile phone:
+
+R: A new phone           |  R Packages: Apps you can download
+:-------------------------:|:-------------------------:
+![](images/iphone.jpg){ height=1.5in } |  ![](images/apps.jpg){ height=1.5in }
+
+So, expanding on this analogy a bit:
+
+1. **R is like a new mobile phone**. It has a certain amount of functionality when you use it for the first time, but it doesn't have everything.
+1. **R packages are like the apps** you can download onto your phone, much like those offered in the App Store and Google Play. For example: Instagram. 
+1. In order to use a package, just like in order to use Instagram, you must:
+    1. First download it and install it. You do this only once.
+    1. Load it, or in other words, "open" it, using the `library()` command.
+    
+So just as you can only start sharing photos with your friends on Instagram if you first install the app and then open it, you can only access an R package's data and functions if you first install the package and then load it with the `library()` command. Let's cover these two steps: 
+
+### Package installation
+
+(Note that if you are working on an RStudio Server, you probably will not need to install your own packages as that has been already done for you.  Still it is important that you know this process for later when you are not using the RStudio Server but rather your own installation of RStudio Desktop.)
+
+There are two ways to install an R package. For example, to install the `ggplot2` package:
+
+1. **Easy way**: In the Files pane of RStudio:
+    a) Click on the "Packages" tab
+    a) Click on "Install"
+    a) Type the name of the package under "Packages (separate multiple with space or comma):" In this case, type `ggplot2`
+    a) Click "Install"  
+     ![](images/install_packages_easy_way.png){ height=4in }
+1. **Alternative way**: In the Console pane run `install.packages("ggplot2")` (you must include the quotation marks).
+
+Repeat this for the `dplyr` and `nycflights13` packages.
+
+**Note**: You only have to install a package once, unless you want to update an already installed package to the latest version. If you want to update a package to the latest version, then re-install it by repeating the above steps.
+
+### Package loading
+
+After you've installed a package, you can now load it using the `library()` command. For example, to load the `ggplot2` and `dplyr` packages, run the following code in the Console pane:
+
+
+~~~
+library(ggplot2)
+library(dplyr)
+~~~
+{: .language-r}
+
+**Note**: You have to reload each package you want to use every time you open a new session of RStudio.  This is a little annoying to get used to and will be your most common error as you begin.  When you see an error such as
+
+```
+Error: could not find function
+```
+
+remember that this likely comes from you trying to use a function in a package that has not been loaded.  Remember to run the `library()` function with the appropriate package to fix this error.
+
+> ## Challenge 2
+>
+> What will be the value of each  variable  after each
+> statement in the following program?
+>
+> 
+> ~~~
+> mass <- 47.5
+> age <- 122
+> mass <- mass * 2.3
+> age <- age - 20
+> ~~~
+> {: .language-r}
+>
+> > ## Solution to challenge 2
+> >
+> > 
+> > ~~~
+> > mass <- 47.5
+> > ~~~
+> > {: .language-r}
+> > This will give a value of 47.5 for the variable mass
+> >
+> > 
+> > ~~~
+> > age <- 122
+> > ~~~
+> > {: .language-r}
+> > This will give a value of 122 for the variable age
+> >
+> > 
+> > ~~~
+> > mass <- mass * 2.3
+> > ~~~
+> > {: .language-r}
+> > This will multiply the existing value of 47.5 by 2.3 to give a new value of
+> > 109.25 to the variable mass.
+> >
+> > 
+> > ~~~
+> > age <- age - 20
+> > ~~~
+> > {: .language-r}
+> > This will subtract 20 from the existing value of 122 to give a new value
+> > of 102 to the variable age.
+> {: .solution}
+{: .challenge}
+
+
+> ## Challenge 3
+>
+> Run the code from the previous challenge, and write a command to
+> compare mass to age. Is mass larger than age?
+>
+> > ## Solution to challenge 3
+> >
+> > One way of answering this question in R is to use the `>` to set up the following:
+> > 
+> > ~~~
+> > mass > age
+> > ~~~
+> > {: .language-r}
+> > 
+> > 
+> > 
+> > ~~~
+> > [1] TRUE
+> > ~~~
+> > {: .output}
+> > This should yield a boolean value of TRUE since 109.25 is greater than 102.
+> {: .solution}
+{: .challenge}
+
+
+> ## Challenge 4
+>
+> Clean up your working environment by deleting the mass and age
+> variables.
+>
+> > ## Solution to challenge 4
+> >
+> > We can use the `rm` command to accomplish this task
+> > 
+> > ~~~
+> > rm(age, mass)
+> > ~~~
+> > {: .language-r}
+> {: .solution}
+{: .challenge}
+
+> ## Challenge 5
+>
+> Install the following packages: `ggplot2`, `plyr`, `gapminder`
+>
+> > ## Solution to challenge 5
+> >
+> > We can use the `install.packages()` command to install the required packages.
+> > 
+> > ~~~
+> > install.packages("ggplot2")
+> > install.packages("plyr")
+> > install.packages("gapminder")
+> > ~~~
+> > {: .language-r}
+> {: .solution}
+{: .challenge}

@@ -22,9 +22,6 @@ library(stringr)
 
 ## R Markdown
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
-
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
 
 
 ```{r}
@@ -32,16 +29,56 @@ When you click the **Knit** button a document will be generated that includes bo
 rawdata <- read_csv("data/TDashboardData_reliability_20160301-20160331.csv")
 View(rawdata)
 ```
-
-
+1. Take rawdata and pipe through filter
+1. Filter by peak service (weekday rush hour)
+1. Filter by only the green line
+1. Mutate to create or overwrite a variable 
+1. str_trim to remove whitespaces before and after values
+1. Create a rely varialbe that 
+1. Finds the reliability at each station
+1. Divides the numerator (people who have to wait too long) by the denominator (all riders).
+1. This is the percentage of people who had to wait. 1 - this ratio is the percentage of people who didn't.
+1. drop the columns we don't need for futher analysis
 
 ```{r}
 rawdata %>% 
   filter(PEAK_OFFPEAK_IND == "Peak Service (Weekdays 6:30-9:30AM, 3:30PM-6:30PM)", ROUTE_TYPE=="Green Line" ) %>% 
-  select(-c("SERVICE_DATE","ROUTE_TYPE","STOP","OTP_NUMERATOR","OTP_DENOMINATOR")) %>% 
-  #Remove and extra spaces
-  mutate(STOP = str_trim(STOP))
+    mutate(STOP = str_trim(STOP), rely = 1 - OTP_NUMERATOR/OTP_DENOMINATOR, rely = round(rely, 4)) %>% 
+   select(-c("SERVICE_DATE","ROUTE_TYPE"))
+```
+
+
+
+## Adding Geolocation data to the dataframe via another table
+
+* The lat/long data is in mbta_stations.csv 
+* Import the MBTA station location data
+
+stations <- read_csv("transit-data-toolkit 2/mbta_stations.csv")
+
+* We will set up our dplyr sequence taking `stations` and passing it thru funcitons
+* Select only the Green Line data
+
+```{r}
+stations %>% 
+  
 
 ```
 
+
+locs <- stations[which (stations$LINE=='GREEN'),]
+
+# Change the name of Station to Stop to match the other dataframe
+colnames(locs)[2] <- "STOP" 
+View(locs)
+
+
+# Join the location data to the reliability file
+joindata <- merge(x = reliability, y = locs, by ="STOP", all.x=TRUE)
+
+#Select only the columns need
+joindata <- joindata[c("STOP","SERVICE_DATE","ROUTE_TYPE","rely","LONGITUDE","LATITUDE")]
+x = !duplicated(joindata$STOP)
+joindata <- joindata[x ,]
+View(joindata)
 

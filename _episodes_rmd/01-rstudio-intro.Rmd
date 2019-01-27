@@ -1,27 +1,18 @@
 ---
 title: "Introduction to R and RStudio"
-teaching: 45
-exercises: 10
+teaching: 15
+exercises: 5
 questions:
 - "How to find your way around RStudio?"
 - "How to interact with R?"
-- "How to manage your environment?"
 - "How to install packages?"
 objectives:
 - "Describe the purpose and use of each pane in the RStudio IDE"
 - "Locate buttons and options in the RStudio IDE"
-- "Define a variable"
-- "Assign data to a variable"
 - "Manage a workspace in an interactive R session"
-- "Use mathematical and comparison operators"
-- "Call functions"
-- "Manage packages"
 keypoints:
 - "Use RStudio to write and run R programs."
 - "R has the usual arithmetic operators and mathematical functions."
-- "Use `<-` to assign values to variables."
-- "Use `ls()` to list the variables in a program."
-- "Use `rm()` to delete objects in a program."
 - "Use `install.packages()` to install packages (libraries)."
 source: Rmd
 ---
@@ -113,24 +104,6 @@ interactive R console.
 > including the modifications you have made.
 {: .callout}
 
-## Introduction to R
-
-Much of your time in R will be spent in the R interactive
-console. This is where you will run all of your code, and can be a
-useful environment to try out ideas before adding them to an R script
-file. This console in RStudio is the same as the one you would get if
-you typed in `R` in your command-line environment.
-
-The first thing you will see in the R interactive session is a bunch
-of information, followed by a ">" and a blinking cursor. In many ways
-this is similar to the shell environment you learned about during the
-shell lessons: it operates on the same idea of a "Read, evaluate,
-print loop": you type in commands, R tries to execute them, and then
-returns a result.
-
-#### move to ep 03
-#### add working with data from mdive
-
 ## What are R packages? {#packages}
 
 * Another point of confusion with new R users is the notion of a package. 
@@ -159,12 +132,8 @@ So, expanding on this analogy a bit:
 1. In order to use a package, just like in order to use Instagram, you must:
     1. First download it and install it. You do this only once.
     1. Load it, or in other words, "open" it, using the `library()` command.
-    
-So just as you can only start sharing photos with your friends on Instagram if you first install the app and then open it, you can only access an R package's data and functions if you first install the package and then load it with the `library()` command. Let's cover these two steps: 
 
 ### Package installation
-
-(Note that if you are working on an RStudio Server, you probably will not need to install your own packages as that has been already done for you.  Still it is important that you know this process for later when you are not using the RStudio Server but rather your own installation of RStudio Desktop.)
 
 There are two ways to install an R package. For example, to install the `ggplot2` package:
 
@@ -197,78 +166,10 @@ Error: could not find function
 
 remember that this likely comes from you trying to use a function in a package that has not been loaded.  Remember to run the `library()` function with the appropriate package to fix this error.
 
-> ## Challenge 2
->
-> What will be the value of each  variable  after each
-> statement in the following program?
->
-> ```{r, eval=FALSE}
-> mass <- 47.5
-> age <- 122
-> mass <- mass * 2.3
-> age <- age - 20
-> ```
->
-> > ## Solution to challenge 2
-> >
-> > ```{r ch2pt1-sol}
-> > mass <- 47.5
-> > ```
-> > This will give a value of `r mass` for the variable mass
-> >
-> > ```{r ch2pt2-sol}
-> > age <- 122
-> > ```
-> > This will give a value of `r age` for the variable age
-> >
-> > ```{r ch2pt3-sol}
-> > mass <- mass * 2.3
-> > ```
-> > This will multiply the existing value of `r mass/2.3` by 2.3 to give a new value of
-> > `r mass` to the variable mass.
-> >
-> > ```{r ch2pt4-sol}
-> > age <- age - 20
-> > ```
-> > This will subtract 20 from the existing value of `r age + 20 ` to give a new value
-> > of `r age` to the variable age.
-> {: .solution}
-{: .challenge}
-
-
-> ## Challenge 3
->
-> Run the code from the previous challenge, and write a command to
-> compare mass to age. Is mass larger than age?
->
-> > ## Solution to challenge 3
-> >
-> > One way of answering this question in R is to use the `>` to set up the following:
-> > ```{r ch3-sol}
-> > mass > age
-> >```
-> > This should yield a boolean value of TRUE since `r mass` is greater than `r age`.
-> {: .solution}
-{: .challenge}
-
-
-> ## Challenge 4
->
-> Clean up your working environment by deleting the mass and age
-> variables.
->
-> > ## Solution to challenge 4
-> >
-> > We can use the `rm` command to accomplish this task
-> > ```{r ch4-sol}
-> > rm(age, mass)
-> > ```
-> {: .solution}
-{: .challenge}
 
 > ## Challenge 5
 >
-> Install the following packages: `ggplot2`, `plyr`, `gapminder`
+> Install the following packages: `ggplot2`, `gapminder`
 >
 > > ## Solution to challenge 5
 > >

@@ -1,0 +1,122 @@
+[
+  {
+    "op": "core/text-transform",
+    "description": "Text transform on cells in column STOP using expression value.trim()",
+    "engineConfig": {
+      "facets": [
+        {
+          "type": "list",
+          "name": "PEAK_OFFPEAK_IND",
+          "expression": "value",
+          "columnName": "PEAK_OFFPEAK_IND",
+          "invert": false,
+          "selection": [
+            {
+              "v": {
+                "v": "Peak Service (Weekdays 6:30-9:30AM, 3:30PM-6:30PM)",
+                "l": "Peak Service (Weekdays 6:30-9:30AM, 3:30PM-6:30PM)"
+              }
+            }
+          ],
+          "selectNumber": false,
+          "selectDateTime": false,
+          "selectBoolean": false,
+          "omitBlank": false,
+          "selectBlank": false,
+          "omitError": false,
+          "selectError": false
+        },
+        {
+          "type": "list",
+          "name": "ROUTE_TYPE",
+          "expression": "value",
+          "columnName": "ROUTE_TYPE",
+          "invert": false,
+          "selection": [
+            {
+              "v": {
+                "v": "Green Line",
+                "l": "Green Line"
+              }
+            }
+          ],
+          "selectNumber": false,
+          "selectDateTime": false,
+          "selectBoolean": false,
+          "omitBlank": false,
+          "selectBlank": false,
+          "omitError": false,
+          "selectError": false
+        }
+      ],
+      "mode": "row-based"
+    },
+    "columnName": "STOP",
+    "expression": "value.trim()",
+    "onError": "keep-original",
+    "repeat": false,
+    "repeatCount": 10
+  },
+  {
+    "op": "core/row-removal",
+    "description": "Remove rows",
+    "engineConfig": {
+      "facets": [
+        {
+          "type": "list",
+          "name": "PEAK_OFFPEAK_IND",
+          "expression": "value",
+          "columnName": "PEAK_OFFPEAK_IND",
+          "invert": false,
+          "selection": [
+            {
+              "v": {
+                "v": "Off-Peak Service (All Other Times)",
+                "l": "Off-Peak Service (All Other Times)"
+              }
+            }
+          ],
+          "selectNumber": false,
+          "selectDateTime": false,
+          "selectBoolean": false,
+          "omitBlank": false,
+          "selectBlank": false,
+          "omitError": false,
+          "selectError": false
+        }
+      ],
+      "mode": "row-based"
+    }
+  },
+  {
+    "op": "core/row-removal",
+    "description": "Remove rows",
+    "engineConfig": {
+      "facets": [
+        {
+          "type": "list",
+          "name": "ROUTE_TYPE",
+          "expression": "value",
+          "columnName": "ROUTE_TYPE",
+          "invert": true,
+          "selection": [
+            {
+              "v": {
+                "v": "Green Line",
+                "l": "Green Line"
+              }
+            }
+          ],
+          "selectNumber": false,
+          "selectDateTime": false,
+          "selectBoolean": false,
+          "omitBlank": false,
+          "selectBlank": false,
+          "omitError": false,
+          "selectError": false
+        }
+      ],
+      "mode": "row-based"
+    }
+  }
+]

@@ -21,9 +21,7 @@ source: Rmd
 ---
 
 
-
-
-
+```
 
 
 ## Introduction
@@ -43,14 +41,15 @@ Let's load all the packages needed for this chapter (this assumes you've already
 
 
 
-```r
+~~~
 library(nycflights13)
 library(ggplot2)
 library(dplyr)
 library(ggmap)
 library(lubridate)
 library(stringr)
-```
+~~~
+{: .language-r}
 
 
 
@@ -106,25 +105,32 @@ No good example data - but can add if find
 We'll use ridership data from MBTA Performance Dashboard for Boston for generating a line graph of average weekly ridership by each subway line. Let's load the data first: 
 
 
-```r
+~~~
 rider_rawdata <- read_csv('data/mbta_ridership2016.csv')
-```
+~~~
+{: .language-r}
 
-```
-## Parsed with column specification:
-## cols(
-##   SERVICE_MONTH = col_date(format = ""),
-##   MODE_TYPE = col_character(),
-##   TOTAL_WEEKDAY_RIDERSHIP_COUNT = col_double(),
-##   NUMBER_OF_WEEKDAYS = col_double(),
-##   AVERAGE_WEEKDAY_RIDERSHIP_COUNT = col_double(),
-##   ROUTE_OR_LINE = col_character()
-## )
-```
 
-```r
+
+~~~
+Parsed with column specification:
+cols(
+  SERVICE_MONTH = col_date(format = ""),
+  MODE_TYPE = col_character(),
+  TOTAL_WEEKDAY_RIDERSHIP_COUNT = col_double(),
+  NUMBER_OF_WEEKDAYS = col_double(),
+  AVERAGE_WEEKDAY_RIDERSHIP_COUNT = col_double(),
+  ROUTE_OR_LINE = col_character()
+)
+~~~
+{: .output}
+
+
+
+~~~
 #View(rider_rawdata)
-```
+~~~
+{: .language-r}
 
 * Most frequently used when the x-axis represents time and the y-axis represents some other numerical variable; such plots are known as *time series*.  
 * Time represents a variable that is connected together by each day following the previous day.  
@@ -137,11 +143,12 @@ Our focus now turns to the `MODE_TYPE` variable in this `ridership` data-set. We
 
 
 
-```r
+~~~
 railrides <- rider_rawdata %>%
   filter(MODE_TYPE =="RAIL") %>% 
   rename(Month = SERVICE_MONTH, Mode = MODE_TYPE, Avg_Weekday_Ridership = TOTAL_WEEKDAY_RIDERSHIP_COUNT, Line = ROUTE_OR_LINE) 
-```
+~~~
+{: .language-r}
 
 * The above selects only those rows in `rider_rawdata` where the mode type is `"RAIL"`.
 
@@ -150,13 +157,14 @@ railrides <- rider_rawdata %>%
 We plot a linegraph of average weekday ridership by month per rail 'line':
 
 
-```r
+~~~
 ggplot(data = railrides,
        mapping = aes(x = Month, y = Avg_Weekday_Ridership)) +
   geom_line()
-```
+~~~
+{: .language-r}
 
-<img src="figure/avg_weekday_ride-1.png" title="Avg. Weekday MBTA Subway Ridership 2016" alt="Avg. Weekday MBTA Subway Ridership 2016" width="\textwidth" />
+<img src="../fig/rmd-04-avg_weekday_ride-1.png" title="Avg. Weekday MBTA Subway Ridership 2016" alt="Avg. Weekday MBTA Subway Ridership 2016" width="612" style="display: block; margin: auto;" />
 
 Was this what you expected? 
 
@@ -164,41 +172,38 @@ Was this what you expected?
 * Let's fix by adding a `group` component and `color` to ggplot 
 
 
-```r
+~~~
 ggplot(data = railrides,
        mapping = aes(x = Month, y = Avg_Weekday_Ridership, group=Line, color=Line)) +
   geom_line() 
-```
+~~~
+{: .language-r}
 
-<img src="figure/avg_weekday_ride_line-1.png" title="Avg. Weekday MBTA Subway Ridership 2016" alt="Avg. Weekday MBTA Subway Ridership 2016" width="\textwidth" />
+<img src="../fig/rmd-04-avg_weekday_ride_line-1.png" title="Avg. Weekday MBTA Subway Ridership 2016" alt="Avg. Weekday MBTA Subway Ridership 2016" width="612" style="display: block; margin: auto;" />
 
 * Ok what's wrong here? 
   * yes, the colors are off in the ledgend 
   * also let's fix the Y scale
 
 
-```r
+~~~
 ggplot(data = railrides,
        mapping = aes(x = Month, y = Avg_Weekday_Ridership,group=Line, color=Line)) +
   geom_line() + 
   scale_y_continuous(labels = scales::comma) +
   scale_color_manual(name="LINE",values=c("BLUE LINE"="blue","GREEN LINE"="green","ORANGE LINE"="orange","RED LINE"="red"))
-```
+~~~
+{: .language-r}
 
-<img src="figure/avg_weekday_scale-color-1.png" title="Avg. Weekday MBTA Subway Ridership 2016" alt="Avg. Weekday MBTA Subway Ridership 2016" width="\textwidth" />
+<img src="../fig/rmd-04-avg_weekday_scale-color-1.png" title="Avg. Weekday MBTA Subway Ridership 2016" alt="Avg. Weekday MBTA Subway Ridership 2016" width="612" style="display: block; margin: auto;" />
 
 * ggplot is very granular in its settings. 
 
-<div class="learncheck">
-**_Learning check_**
-</div>
 
-**(LC3.1)**  Why should linegraphs be avoided when there is not a clear ordering of the horizontal axis?
-
-**(LC3.2)** Why are linegraphs frequently used when time is the explanatory variable?
-
-
-
+ Why should linegraphs be avoided when there is not a clear ordering of the horizontal axis?
+ *Because lines suggest connectedness and ordering.*  
+ Why are linegraphs frequently used when time is the explanatory variable?
+*Because time is sequential: subsequent observations are closely related to each other.*  
 
 
 <div class="learncheck">
@@ -228,43 +233,24 @@ In this table, the counts of the `Lines` are pre-counted in `Avg_Weekday_Ridersh
 
 
 
-```r
+~~~
 ggplot(data = railrides, mapping = aes(x = Line, y = Avg_Weekday_Ridership, fill=Line)) +
   geom_col() + facet_grid(~Month) 
-```
+~~~
+{: .language-r}
 
-<img src="figure/railrides-bar-1.png" title="(ref:geomcol)" alt="(ref:geomcol)" width="\textwidth" />
+<img src="../fig/rmd-04-railrides-bar-1.png" title="(ref:geomcol)" alt="(ref:geomcol)" width="612" style="display: block; margin: auto;" />
 Like the line graph we can control the colors manually, but this time we need to use `scale_fill_manual()` 
 
 
-```r
+~~~
 ggplot(data = railrides, mapping = aes(x = Line, y = Avg_Weekday_Ridership, fill=Line)) +
   geom_col() + 
   scale_fill_manual(name="LINE",values=c("BLUE LINE"="blue","GREEN LINE"="green","ORANGE LINE"="orange","RED LINE"="red"))
-```
+~~~
+{: .language-r}
 
-<img src="figure/railrides-bar-color-1.png" title="(ref:geomcol)" alt="(ref:geomcol)" width="\textwidth" />
-
-<div class="learncheck">
-**_Learning check_**
-</div>
-
-**(LC3.3)** Why are histograms inappropriate for visualizing categorical variables?
-
-**(LC3.4)** How many Envoy Air flights departed NYC in 2013?
-
-**(LC3.5)** What was the seventh highest airline in terms of departed flights from NYC in 2013? How could we better present the table to get this answer quickly?
-
-
-
-
-<div class="learncheck">
-
-</div>
-
-<div class="learncheck">
-
-</div>
+<img src="../fig/rmd-04-railrides-bar-color-1.png" title="(ref:geomcol)" alt="(ref:geomcol)" width="612" style="display: block; margin: auto;" />
 
 ### Using barplots to compare two categorical variables
 
@@ -272,101 +258,78 @@ Barplots are the go-to way to visualize the frequency of different categories of
 
 
 
-```r
+~~~
 ggplot(data = railrides,
        mapping = aes(x = Line, y=Avg_Weekday_Ridership, fill = Month)) +
   geom_col()  +
  scale_fill_manual(name="Line",values=c("BLUE LINE"="blue","GREEN LINE"="green","ORANGE LINE"="orange","RED LINE"="red"))
-```
+~~~
+{: .language-r}
 
-```
-## Error: Continuous value supplied to discrete scale
-```
 
-<img src="figure/unnamed-chunk-7-1.png" title="Stacked barplot comparing the Avg. Weekday Ridership by Line and Month" alt="Stacked barplot comparing the Avg. Weekday Ridership by Line and Month" width="\textwidth" />
+
+~~~
+Error: Continuous value supplied to discrete scale
+~~~
+{: .error}
+
+<img src="../fig/rmd-04-unnamed-chunk-5-1.png" title="Stacked barplot comparing the Avg. Weekday Ridership by Line and Month" alt="Stacked barplot comparing the Avg. Weekday Ridership by Line and Month" width="612" style="display: block; margin: auto;" />
 Ok, what happened here? 
 
 * R is treating Month as a continuous variable (a number), when we want a category - known in R as a factor. 
 * We can make R treat Month as a factor on the fly by wrapping it in the `factor()` function
 
 
-```r
+~~~
 ggplot(data = railrides,
        mapping = aes(x = Line, y=Avg_Weekday_Ridership, fill = factor(Month))) +
   geom_col()  
-```
+~~~
+{: .language-r}
 
-<img src="figure/unnamed-chunk-8-1.png" title="Stacked barplot comparing the Avg. Weekday Ridership by Line and Month" alt="Stacked barplot comparing the Avg. Weekday Ridership by Line and Month" width="\textwidth" />
+<img src="../fig/rmd-04-unnamed-chunk-6-1.png" title="Stacked barplot comparing the Avg. Weekday Ridership by Line and Month" alt="Stacked barplot comparing the Avg. Weekday Ridership by Line and Month" width="612" style="display: block; margin: auto;" />
 
 This plot is what is known as a *stacked barplot*.  While simple to make, it often leads to many problems. For example in this plot, it is difficult to compare the heights of the different colors (corresponding to the number of flights from each airport) between the bars (corresponding to the different carriers).
-
-<div class="learncheck">
-**_Learning check_**
-</div>
-
-**(LC3.6)** What kinds of questions are not easily answered by looking at the above figure?
-
-**(LC3.7)** What can you say, if anything, about the relationship between airline and airport in NYC in 2013 in regards to the number of departing flights?
-
-
-
-<div class="learncheck">
-
-</div>
 
 Another variation on the stacked barplot is the *side-by-side barplot* also called a *dodged barplot*.
 
 
-```r
+~~~
 ggplot(data = railrides,
        mapping = aes(x = Line, y =Avg_Weekday_Ridership, fill = factor(month(Month)))) +
   geom_col(position = "dodge")
-```
+~~~
+{: .language-r}
 
-<img src="figure/unnamed-chunk-10-1.png" title="Side-by-side AKA dodged barplot comparing the number of flights by carrier and airport" alt="Side-by-side AKA dodged barplot comparing the number of flights by carrier and airport" width="\textwidth" />
-
-
-<div class="learncheck">
-**_Learning check_**
-</div>
-
-**(LC3.8)** Why might the side-by-side (AKA dodged) barplot be preferable to a stacked barplot in this case?
-
-**(LC3.9)** What are the disadvantages of using a side-by-side (AKA dodged) barplot, in general?
+<img src="../fig/rmd-04-unnamed-chunk-7-1.png" title="Side-by-side AKA dodged barplot comparing the number of flights by carrier and airport" alt="Side-by-side AKA dodged barplot comparing the number of flights by carrier and airport" width="612" style="display: block; margin: auto;" />
 
 
-<div class="learncheck">
-
-</div>
+1. Why might the side-by-side (AKA dodged) barplot be preferable to a stacked barplot in this case?
+  * We can easily compare the different aiports for a given carrier using a single comparison line i.e. things are lined up
+2. What are the disadvantages of using a side-by-side (AKA dodged) barplot, in general?
+  * It is hard to get totals for each Line.
 
 Lastly, an often preferred type of barplot is the *faceted barplot*. This concept of faceting and small multiples.  This gives us a nicer way to compare the distributions across both `Line` and `Avg_Weekday_Ridership` by `Month`. We will also use the `lubridate` package to clean up the month. 
 
 
-```r
+~~~
 ggplot(data = railrides,
        mapping = aes(x = Line, y = Avg_Weekday_Ridership, fill = Line)) +
   geom_col() +
   facet_wrap(~ month(Month, label=T), nrow = 5) +
   scale_fill_manual(name="Line",values=c("BLUE LINE"="blue","GREEN LINE"="green","ORANGE LINE"="orange","RED LINE"="red"))
-```
+~~~
+{: .language-r}
 
-<img src="figure/facet-bar-vert-1.png" title="Faceted barplot comparing the number of flights by carrier and airport" alt="Faceted barplot comparing the number of flights by carrier and airport" width="\textwidth" />
+<img src="../fig/rmd-04-facet-bar-vert-1.png" title="Faceted barplot comparing the number of flights by carrier and airport" alt="Faceted barplot comparing the number of flights by carrier and airport" width="612" style="display: block; margin: auto;" />
 
 We did a few things here to clean it up. I used `lubridates` (a package to work with dates) function `month` function to turn our month into a better label. this happens inside the facet function. 
 
-<div class="learncheck">
-**_Learning check_**
-</div>
 
-**(LC3.10)** Why is the faceted barplot preferred to the side-by-side and stacked barplots in this case?
+1. Why is the faceted barplot preferred to the side-by-side and stacked barplots in this case?
+2. What information about the different Lines at different months is more easily seen in the faceted barplot?
+  * Now we can also compare the different Lines **within** a particular month easily too. For example, we can read off who the top carrier for each airport is easily using a single horizontal line.
 
-**(LC3.11)** What information about the different carriers at different airports is more easily seen in the faceted barplot?
-
-
-
-<div class="learncheck">
-
-</div>
 
 ### Summary
 
@@ -401,297 +364,478 @@ For this exercise we will be using the data provided by <https://transitdatatool
 Let's load the data: 
 
 
-```r
+~~~
  relydata <- read_csv('data/mbta_rely_joined_data.csv')
-```
+~~~
+{: .language-r}
 
-```
-## Parsed with column specification:
-## cols(
-##   X1 = col_double(),
-##   STOP = col_character(),
-##   SERVICE_DATE = col_character(),
-##   ROUTE_OR_LINE = col_character(),
-##   ROUTE_TYPE = col_character(),
-##   OTP_NUMERATOR = col_double(),
-##   OTP_DENOMINATOR = col_double(),
-##   rely = col_double(),
-##   OBJECTID = col_double(),
-##   LINE = col_character(),
-##   TERMINUS = col_character(),
-##   ROUTE = col_character(),
-##   LONGITUDE = col_double(),
-##   LATITUDE = col_double()
-## )
-```
+
+
+~~~
+Warning: Missing column names filled in: 'X1' [1]
+~~~
+{: .error}
+
+
+
+~~~
+Parsed with column specification:
+cols(
+  X1 = col_double(),
+  STOP = col_character(),
+  SERVICE_DATE = col_character(),
+  ROUTE_OR_LINE = col_character(),
+  ROUTE_TYPE = col_character(),
+  OTP_NUMERATOR = col_double(),
+  OTP_DENOMINATOR = col_double(),
+  rely = col_double(),
+  OBJECTID = col_double(),
+  LINE = col_character(),
+  TERMINUS = col_character(),
+  ROUTE = col_character(),
+  LONGITUDE = col_double(),
+  LATITUDE = col_double()
+)
+~~~
+{: .output}
 
 We are using the `ggmap` package for mapping this data.  Note, there are a bunch of packages that use the `ggplot2` framework (grammar of graphics). ggmap is one of them and it specifically, is a collection of functions to visualize spatial data and models on top of static maps from various online sources (e.g Google Maps and Stamen Maps). It includes tools common to those tasks, including functions for geolocation and routing.
 
 We need to install and import it to use it.
 
 
-```r
+~~~
 #install.packages('ggmap')
 library(ggmap)
-```
+~~~
+{: .language-r}
 
 Now we can start to map our data. First, we need to create a bounding box. To do this we need to define this by longitude and latitude sets around Boston. 
 
 
 
-```r
+~~~
 # Map the Green Line
 map_lat <- c(42.481411, 42.21244)
 map_lon <- c(-71.484765, -70.794937)
-```
+~~~
+{: .language-r}
 
 Once defined, we can set a variable for the bounding box: 
 
 
-```r
+~~~
 map_bbox <- make_bbox(map_lon,map_lat, f= 0.05)
-```
+~~~
+{: .language-r}
 
 Then we need to use the `get_map` function from `ggmap` to retrieve a base map. 
 
 
-```r
+~~~
 mbta_map <- get_map(map_bbox, source="stamen", maptype="watercolor", zoom=12) 
-```
+~~~
+{: .language-r}
 
-```
-## 54 tiles needed, this may take a while (try a smaller zoom).
-```
 
-```
-## Map from URL : http://tile.stamen.com/watercolor/12/1234/1512.jpg
-```
 
-```
-## Map from URL : http://tile.stamen.com/watercolor/12/1235/1512.jpg
-```
+~~~
+54 tiles needed, this may take a while (try a smaller zoom).
+~~~
+{: .output}
 
-```
-## Map from URL : http://tile.stamen.com/watercolor/12/1236/1512.jpg
-```
 
-```
-## Map from URL : http://tile.stamen.com/watercolor/12/1237/1512.jpg
-```
 
-```
-## Map from URL : http://tile.stamen.com/watercolor/12/1238/1512.jpg
-```
+~~~
+Map from URL : http://tile.stamen.com/watercolor/12/1234/1512.jpg
+~~~
+{: .output}
 
-```
-## Map from URL : http://tile.stamen.com/watercolor/12/1239/1512.jpg
-```
 
-```
-## Map from URL : http://tile.stamen.com/watercolor/12/1240/1512.jpg
-```
 
-```
-## Map from URL : http://tile.stamen.com/watercolor/12/1241/1512.jpg
-```
+~~~
+Map from URL : http://tile.stamen.com/watercolor/12/1235/1512.jpg
+~~~
+{: .output}
 
-```
-## Map from URL : http://tile.stamen.com/watercolor/12/1242/1512.jpg
-```
 
-```
-## Map from URL : http://tile.stamen.com/watercolor/12/1234/1513.jpg
-```
 
-```
-## Map from URL : http://tile.stamen.com/watercolor/12/1235/1513.jpg
-```
+~~~
+Map from URL : http://tile.stamen.com/watercolor/12/1236/1512.jpg
+~~~
+{: .output}
 
-```
-## Map from URL : http://tile.stamen.com/watercolor/12/1236/1513.jpg
-```
 
-```
-## Map from URL : http://tile.stamen.com/watercolor/12/1237/1513.jpg
-```
 
-```
-## Map from URL : http://tile.stamen.com/watercolor/12/1238/1513.jpg
-```
+~~~
+Map from URL : http://tile.stamen.com/watercolor/12/1237/1512.jpg
+~~~
+{: .output}
 
-```
-## Map from URL : http://tile.stamen.com/watercolor/12/1239/1513.jpg
-```
 
-```
-## Map from URL : http://tile.stamen.com/watercolor/12/1240/1513.jpg
-```
 
-```
-## Map from URL : http://tile.stamen.com/watercolor/12/1241/1513.jpg
-```
+~~~
+Map from URL : http://tile.stamen.com/watercolor/12/1238/1512.jpg
+~~~
+{: .output}
 
-```
-## Map from URL : http://tile.stamen.com/watercolor/12/1242/1513.jpg
-```
 
-```
-## Map from URL : http://tile.stamen.com/watercolor/12/1234/1514.jpg
-```
 
-```
-## Map from URL : http://tile.stamen.com/watercolor/12/1235/1514.jpg
-```
+~~~
+Map from URL : http://tile.stamen.com/watercolor/12/1239/1512.jpg
+~~~
+{: .output}
 
-```
-## Map from URL : http://tile.stamen.com/watercolor/12/1236/1514.jpg
-```
 
-```
-## Map from URL : http://tile.stamen.com/watercolor/12/1237/1514.jpg
-```
 
-```
-## Map from URL : http://tile.stamen.com/watercolor/12/1238/1514.jpg
-```
+~~~
+Map from URL : http://tile.stamen.com/watercolor/12/1240/1512.jpg
+~~~
+{: .output}
 
-```
-## Map from URL : http://tile.stamen.com/watercolor/12/1239/1514.jpg
-```
 
-```
-## Map from URL : http://tile.stamen.com/watercolor/12/1240/1514.jpg
-```
 
-```
-## Map from URL : http://tile.stamen.com/watercolor/12/1241/1514.jpg
-```
+~~~
+Map from URL : http://tile.stamen.com/watercolor/12/1241/1512.jpg
+~~~
+{: .output}
 
-```
-## Map from URL : http://tile.stamen.com/watercolor/12/1242/1514.jpg
-```
 
-```
-## Map from URL : http://tile.stamen.com/watercolor/12/1234/1515.jpg
-```
 
-```
-## Map from URL : http://tile.stamen.com/watercolor/12/1235/1515.jpg
-```
+~~~
+Map from URL : http://tile.stamen.com/watercolor/12/1242/1512.jpg
+~~~
+{: .output}
 
-```
-## Map from URL : http://tile.stamen.com/watercolor/12/1236/1515.jpg
-```
 
-```
-## Map from URL : http://tile.stamen.com/watercolor/12/1237/1515.jpg
-```
 
-```
-## Map from URL : http://tile.stamen.com/watercolor/12/1238/1515.jpg
-```
+~~~
+Map from URL : http://tile.stamen.com/watercolor/12/1234/1513.jpg
+~~~
+{: .output}
 
-```
-## Map from URL : http://tile.stamen.com/watercolor/12/1239/1515.jpg
-```
 
-```
-## Map from URL : http://tile.stamen.com/watercolor/12/1240/1515.jpg
-```
 
-```
-## Map from URL : http://tile.stamen.com/watercolor/12/1241/1515.jpg
-```
+~~~
+Map from URL : http://tile.stamen.com/watercolor/12/1235/1513.jpg
+~~~
+{: .output}
 
-```
-## Map from URL : http://tile.stamen.com/watercolor/12/1242/1515.jpg
-```
 
-```
-## Map from URL : http://tile.stamen.com/watercolor/12/1234/1516.jpg
-```
 
-```
-## Map from URL : http://tile.stamen.com/watercolor/12/1235/1516.jpg
-```
+~~~
+Map from URL : http://tile.stamen.com/watercolor/12/1236/1513.jpg
+~~~
+{: .output}
 
-```
-## Map from URL : http://tile.stamen.com/watercolor/12/1236/1516.jpg
-```
 
-```
-## Map from URL : http://tile.stamen.com/watercolor/12/1237/1516.jpg
-```
 
-```
-## Map from URL : http://tile.stamen.com/watercolor/12/1238/1516.jpg
-```
+~~~
+Map from URL : http://tile.stamen.com/watercolor/12/1237/1513.jpg
+~~~
+{: .output}
 
-```
-## Map from URL : http://tile.stamen.com/watercolor/12/1239/1516.jpg
-```
 
-```
-## Map from URL : http://tile.stamen.com/watercolor/12/1240/1516.jpg
-```
 
-```
-## Map from URL : http://tile.stamen.com/watercolor/12/1241/1516.jpg
-```
+~~~
+Map from URL : http://tile.stamen.com/watercolor/12/1238/1513.jpg
+~~~
+{: .output}
 
-```
-## Map from URL : http://tile.stamen.com/watercolor/12/1242/1516.jpg
-```
 
-```
-## Map from URL : http://tile.stamen.com/watercolor/12/1234/1517.jpg
-```
 
-```
-## Map from URL : http://tile.stamen.com/watercolor/12/1235/1517.jpg
-```
+~~~
+Map from URL : http://tile.stamen.com/watercolor/12/1239/1513.jpg
+~~~
+{: .output}
 
-```
-## Map from URL : http://tile.stamen.com/watercolor/12/1236/1517.jpg
-```
 
-```
-## Map from URL : http://tile.stamen.com/watercolor/12/1237/1517.jpg
-```
 
-```
-## Map from URL : http://tile.stamen.com/watercolor/12/1238/1517.jpg
-```
+~~~
+Map from URL : http://tile.stamen.com/watercolor/12/1240/1513.jpg
+~~~
+{: .output}
 
-```
-## Map from URL : http://tile.stamen.com/watercolor/12/1239/1517.jpg
-```
 
-```
-## Map from URL : http://tile.stamen.com/watercolor/12/1240/1517.jpg
-```
 
-```
-## Map from URL : http://tile.stamen.com/watercolor/12/1241/1517.jpg
-```
+~~~
+Map from URL : http://tile.stamen.com/watercolor/12/1241/1513.jpg
+~~~
+{: .output}
 
-```
-## Map from URL : http://tile.stamen.com/watercolor/12/1242/1517.jpg
-```
+
+
+~~~
+Map from URL : http://tile.stamen.com/watercolor/12/1242/1513.jpg
+~~~
+{: .output}
+
+
+
+~~~
+Map from URL : http://tile.stamen.com/watercolor/12/1234/1514.jpg
+~~~
+{: .output}
+
+
+
+~~~
+Map from URL : http://tile.stamen.com/watercolor/12/1235/1514.jpg
+~~~
+{: .output}
+
+
+
+~~~
+Map from URL : http://tile.stamen.com/watercolor/12/1236/1514.jpg
+~~~
+{: .output}
+
+
+
+~~~
+Map from URL : http://tile.stamen.com/watercolor/12/1237/1514.jpg
+~~~
+{: .output}
+
+
+
+~~~
+Map from URL : http://tile.stamen.com/watercolor/12/1238/1514.jpg
+~~~
+{: .output}
+
+
+
+~~~
+Map from URL : http://tile.stamen.com/watercolor/12/1239/1514.jpg
+~~~
+{: .output}
+
+
+
+~~~
+Map from URL : http://tile.stamen.com/watercolor/12/1240/1514.jpg
+~~~
+{: .output}
+
+
+
+~~~
+Map from URL : http://tile.stamen.com/watercolor/12/1241/1514.jpg
+~~~
+{: .output}
+
+
+
+~~~
+Map from URL : http://tile.stamen.com/watercolor/12/1242/1514.jpg
+~~~
+{: .output}
+
+
+
+~~~
+Map from URL : http://tile.stamen.com/watercolor/12/1234/1515.jpg
+~~~
+{: .output}
+
+
+
+~~~
+Map from URL : http://tile.stamen.com/watercolor/12/1235/1515.jpg
+~~~
+{: .output}
+
+
+
+~~~
+Map from URL : http://tile.stamen.com/watercolor/12/1236/1515.jpg
+~~~
+{: .output}
+
+
+
+~~~
+Map from URL : http://tile.stamen.com/watercolor/12/1237/1515.jpg
+~~~
+{: .output}
+
+
+
+~~~
+Map from URL : http://tile.stamen.com/watercolor/12/1238/1515.jpg
+~~~
+{: .output}
+
+
+
+~~~
+Map from URL : http://tile.stamen.com/watercolor/12/1239/1515.jpg
+~~~
+{: .output}
+
+
+
+~~~
+Map from URL : http://tile.stamen.com/watercolor/12/1240/1515.jpg
+~~~
+{: .output}
+
+
+
+~~~
+Map from URL : http://tile.stamen.com/watercolor/12/1241/1515.jpg
+~~~
+{: .output}
+
+
+
+~~~
+Map from URL : http://tile.stamen.com/watercolor/12/1242/1515.jpg
+~~~
+{: .output}
+
+
+
+~~~
+Map from URL : http://tile.stamen.com/watercolor/12/1234/1516.jpg
+~~~
+{: .output}
+
+
+
+~~~
+Map from URL : http://tile.stamen.com/watercolor/12/1235/1516.jpg
+~~~
+{: .output}
+
+
+
+~~~
+Map from URL : http://tile.stamen.com/watercolor/12/1236/1516.jpg
+~~~
+{: .output}
+
+
+
+~~~
+Map from URL : http://tile.stamen.com/watercolor/12/1237/1516.jpg
+~~~
+{: .output}
+
+
+
+~~~
+Map from URL : http://tile.stamen.com/watercolor/12/1238/1516.jpg
+~~~
+{: .output}
+
+
+
+~~~
+Map from URL : http://tile.stamen.com/watercolor/12/1239/1516.jpg
+~~~
+{: .output}
+
+
+
+~~~
+Map from URL : http://tile.stamen.com/watercolor/12/1240/1516.jpg
+~~~
+{: .output}
+
+
+
+~~~
+Map from URL : http://tile.stamen.com/watercolor/12/1241/1516.jpg
+~~~
+{: .output}
+
+
+
+~~~
+Map from URL : http://tile.stamen.com/watercolor/12/1242/1516.jpg
+~~~
+{: .output}
+
+
+
+~~~
+Map from URL : http://tile.stamen.com/watercolor/12/1234/1517.jpg
+~~~
+{: .output}
+
+
+
+~~~
+Map from URL : http://tile.stamen.com/watercolor/12/1235/1517.jpg
+~~~
+{: .output}
+
+
+
+~~~
+Map from URL : http://tile.stamen.com/watercolor/12/1236/1517.jpg
+~~~
+{: .output}
+
+
+
+~~~
+Map from URL : http://tile.stamen.com/watercolor/12/1237/1517.jpg
+~~~
+{: .output}
+
+
+
+~~~
+Map from URL : http://tile.stamen.com/watercolor/12/1238/1517.jpg
+~~~
+{: .output}
+
+
+
+~~~
+Map from URL : http://tile.stamen.com/watercolor/12/1239/1517.jpg
+~~~
+{: .output}
+
+
+
+~~~
+Map from URL : http://tile.stamen.com/watercolor/12/1240/1517.jpg
+~~~
+{: .output}
+
+
+
+~~~
+Map from URL : http://tile.stamen.com/watercolor/12/1241/1517.jpg
+~~~
+{: .output}
+
+
+
+~~~
+Map from URL : http://tile.stamen.com/watercolor/12/1242/1517.jpg
+~~~
+{: .output}
 
 finally, we can create the map using the `ggmap` function from `ggmap`. This works a lot like `ggplot2`. 
 
 
-```r
+~~~
 mbta_subway <- ggmap(mbta_map) + 
   geom_point(data=relydata, aes(x=LONGITUDE, y=LATITUDE, color=rely), size=3, shape=15) + 
   scale_colour_gradientn(colours=c(rgb(1,1,1),rgb(0,0.45,0.70))) 
 mbta_subway <- mbta_subway +   labs(title="MBTA Green Line Reliability", 
                                     caption="Data Source: MBTA Developer Portal")
 mbta_subway
-```
+~~~
+{: .language-r}
 
-<img src="figure/unnamed-chunk-17-1.png" title="plot of chunk unnamed-chunk-17" alt="plot of chunk unnamed-chunk-17" width="\textwidth" />
+<img src="../fig/rmd-04-unnamed-chunk-12-1.png" title="plot of chunk unnamed-chunk-12" alt="plot of chunk unnamed-chunk-12" width="612" style="display: block; margin: auto;" />
 
 
 

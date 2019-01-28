@@ -20,84 +20,11 @@ source: Rmd
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+source("../bin/chunk-options.R")
+knitr_fig_path("04-")
 ```
-```{r images, include=FALSE}
-include_image <- function(path,                           
-                          html_opts = "width=45%",
-                          latex_opts = html_opts,
-                          alt_text = ""){
-  if(knitr:::is_html_output()){
-    glue::glue("![{alt_text}]({path}){{ {html_opts} }}")
-  } else if(knitr:::is_latex_output()){
-    glue::glue("![{alt_text}]({path}){{ {latex_opts} }}")    
-  }
-}
-
-image_link <- function(path,
-                       link,
-                       html_opts = "height: 200px;",
-                       latex_opts = "width=0.2\\textwidth",
-                       alt_text = "",
-                       centering = TRUE){
-  if(knitr:::is_html_output()){
-    if(centering){
-    glue::glue('
-      <center><a target="_blank" class="page-link" href="{link}"><img src="{path}" style="{html_opts}"/></a></center>')
-    } else {
-      glue::glue('
-      <a target="_blank" class="page-link" href="{link}"><img src="{path}" style="{html_opts}"/></a>')
-    }
-  }
-  else if(knitr:::is_latex_output()){
-    if(centering){
-      glue::glue('\\begin{{center}}
-        \\href{{{link}}}{{\\includegraphics[{latex_opts}]{{{path}}}}}
-        \\end{{center}}')
-    } else
-      glue::glue('\\href{{{link}}}{{\\includegraphics[{latex_opts}]{{{path}}}}}')
-  }
-
-}
 ```
 
-
-```{r setup-viz, include=FALSE, purl=FALSE}
-chap <- 3
-lc <- 0
-rq <- 0
-# **`r paste0("(LC", chap, ".", (lc <- lc + 1), ")")`**
-# **`r paste0("(RQ", chap, ".", (rq <- rq + 1), ")")`**
-
-knitr::opts_chunk$set(
-  tidy = FALSE,
-  out.width = '\\textwidth',
-  fig.height = 4,
-  warning = FALSE
-  )
-
-# In knitr::kable printing replace all NA's with blanks
-options(knitr.kable.NA = '')
-
-# This bit of code is a bug fix on asis blocks, which we use to show/not show LC
-# solutions, which are written like markdown text. In theory, it shouldn't be
-# necessary for knitr versions <=1.11.6, but I've found I still need to for
-# everything to knit properly in asis blocks. More info here:
-# https://stackoverflow.com/questions/32944715/conditionally-display-block-of-markdown-text-using-knitr
-library(knitr)
-knit_engines$set(asis = function(options) {
-  if (options$echo && options$eval) knit_child(text = options$code)
-})
-
-# This controls which LC solutions to show. Options for solutions_shown: "ALL"
-# (to show all solutions), or subsets of c('3-2', '3-3',
-# '3-4','3-5','3-6','3-7'), including the null vector c('') to show no
-# solutions.
-# solutions_shown <- c('3-1', '3-2', '3-3', '3-4', '3-5', '3-6' ,'3-7', '3-8', '3-9', '3-10', '3-11', '3-12', '3-13', '3-14')
-solutions_shown <- c('')
-show_solutions <- function(section){
-  return(solutions_shown == "ALL" | section %in% solutions_shown)
-}
-```
 
 ## Introduction
 
@@ -241,20 +168,11 @@ ggplot(data = railrides,
 
 * ggplot is very granular in its settings. 
 
-```{block lc-linegraph, type='learncheck', purl=FALSE}
-**_Learning check_**
-```
 
-**`r paste0("(LC", chap, ".", (lc <- lc + 1), ")")`**  Why should linegraphs be avoided when there is not a clear ordering of the horizontal axis?
-
-**`r paste0("(LC", chap, ".", (lc <- lc + 1), ")")`** Why are linegraphs frequently used when time is the explanatory variable?
-
-
-```{asis lc-linegraph-solutions, include=show_solutions('3-5')}
-**Learning Check Solutions**  
-**`r paste0("(LC", chap, ".", (lc - 2), ")")`**: Why should linegraphs be avoided when there is not a clear ordering of the horizontal axis? *Because lines suggest connectedness and ordering.*  
-**`r paste0("(LC", chap, ".", (lc - 1), ")")`**: Why are linegraphs frequently used when time is the explanatory variable? *Because time is sequential: subsequent observations are closely related to each other.*  
-```
+ Why should linegraphs be avoided when there is not a clear ordering of the horizontal axis?
+ *Because lines suggest connectedness and ordering.*  
+ Why are linegraphs frequently used when time is the explanatory variable?
+*Because time is sequential: subsequent observations are closely related to each other.*  
 
 
 ```{block, type='learncheck', purl=FALSE}
@@ -294,31 +212,6 @@ ggplot(data = railrides, mapping = aes(x = Line, y = Avg_Weekday_Ridership, fill
   scale_fill_manual(name="LINE",values=c("BLUE LINE"="blue","GREEN LINE"="green","ORANGE LINE"="orange","RED LINE"="red"))
 ```
 
-```{block lc-barplot, type='learncheck', purl=FALSE}
-**_Learning check_**
-```
-
-**`r paste0("(LC", chap, ".", (lc <- lc + 1), ")")`** Why are histograms inappropriate for visualizing categorical variables?
-
-**`r paste0("(LC", chap, ".", (lc <- lc + 1), ")")`** How many Envoy Air flights departed NYC in 2013?
-
-**`r paste0("(LC", chap, ".", (lc <- lc + 1), ")")`** What was the seventh highest airline in terms of departed flights from NYC in 2013? How could we better present the table to get this answer quickly?
-
-
-```{asis lc-barplot-solutions, include=show_solutions('3-10')}
-**Learning Check Solutions**
-
-* **`r paste0("(LC", chap, ".", (lc - 1), ")")`: How many Envoy Air flights departed NYC in 2013?** Envoy Air is carrier code `MQ` and thus 26397 flights departed NYC in 2013.
-* **`r paste0("(LC", chap, ".", (lc), ")")`: What was the seventh highest airline in terms of departed flights from NYC in 2013? How could we better present the table to get this answer quickly?** What a pain! We'll see in Chapter 5 on Data Wrangling that applying `arrange(desc(n))` will sort this table in descending order of `n`!
-
-```
-
-```{block, type='learncheck', purl=FALSE}
-```
-
-```{block, type='learncheck', purl=FALSE}
-```
-
 ### Using barplots to compare two categorical variables
 
 Barplots are the go-to way to visualize the frequency of different categories of a categorical variable. They make it easy to order the counts and to compare the frequencies of one group to another. Another use of barplots (unfortunately, sometimes inappropriately and confusingly) is to compare two categorical variables together.  Let's examine the distribution of outgoing flights from NYC by `carrier` and `airport`.
@@ -343,23 +236,6 @@ ggplot(data = railrides,
 
 This plot is what is known as a *stacked barplot*.  While simple to make, it often leads to many problems. For example in this plot, it is difficult to compare the heights of the different colors (corresponding to the number of flights from each airport) between the bars (corresponding to the different carriers).
 
-```{block lc-barplot-two-var, type='learncheck', purl=FALSE}
-**_Learning check_**
-```
-
-**`r paste0("(LC", chap, ".", (lc <- lc + 1), ")")`** What kinds of questions are not easily answered by looking at the above figure?
-
-**`r paste0("(LC", chap, ".", (lc <- lc + 1), ")")`** What can you say, if anything, about the relationship between airline and airport in NYC in 2013 in regards to the number of departing flights?
-
-```{asis lc-barplot-two-var-solutions, include=show_solutions('3-12')}
-**Learning Check Solutions**
-
-* **`r paste0("(LC", chap, ".", (lc - 1), ")")` What kinds of questions are not easily answered by looking at the above figure?** Because the red, green, and blue bars don't all start at 0 (only red does), it makes comparing counts hard.
-```
-
-```{block, type='learncheck', purl=FALSE}
-```
-
 Another variation on the stacked barplot is the *side-by-side barplot* also called a *dodged barplot*.
 
 ```{r, fig.cap="Side-by-side AKA dodged barplot comparing the number of flights by carrier and airport", fig.height=5}
@@ -369,22 +245,10 @@ ggplot(data = railrides,
 ```
 
 
-```{block lc-barplot-stacked, type='learncheck', purl=FALSE}
-**_Learning check_**
-```
-
-**`r paste0("(LC", chap, ".", (lc <- lc + 1), ")")`** Why might the side-by-side (AKA dodged) barplot be preferable to a stacked barplot in this case?
-
-**`r paste0("(LC", chap, ".", (lc <- lc + 1), ")")`** What are the disadvantages of using a side-by-side (AKA dodged) barplot, in general?
-
-```{asis lc-barplot-stacked-solutions, include=show_solutions('3-13')}
-**Learning Check Solutions**
-
-* **`r paste0("(LC", chap, ".", (lc - 1), ")")` Why might the side-by-side barplot be preferable to a stacked barplot in this case?** We can easily compare the different aiports for a given carrier using a single comparison line i.e. things are lined up
-* **`r paste0("(LC", chap, ".", (lc - 0), ")")` What are the disadvantages of using a side-by-side barplot, in general?** It is hard to get totals for each airline.
-```
-```{block, type='learncheck', purl=FALSE}
-```
+1. Why might the side-by-side (AKA dodged) barplot be preferable to a stacked barplot in this case?
+  * We can easily compare the different aiports for a given carrier using a single comparison line i.e. things are lined up
+2. What are the disadvantages of using a side-by-side (AKA dodged) barplot, in general?
+  * It is hard to get totals for each Line.
 
 Lastly, an often preferred type of barplot is the *faceted barplot*. This concept of faceting and small multiples.  This gives us a nicer way to compare the distributions across both `Line` and `Avg_Weekday_Ridership` by `Month`. We will also use the `lubridate` package to clean up the month. 
 
@@ -398,23 +262,11 @@ ggplot(data = railrides,
 
 We did a few things here to clean it up. I used `lubridates` (a package to work with dates) function `month` function to turn our month into a better label. this happens inside the facet function. 
 
-```{block lc-barplot-facet, type='learncheck', purl=FALSE}
-**_Learning check_**
-```
 
-**`r paste0("(LC", chap, ".", (lc <- lc + 1), ")")`** Why is the faceted barplot preferred to the side-by-side and stacked barplots in this case?
+1. Why is the faceted barplot preferred to the side-by-side and stacked barplots in this case?
+2. What information about the different Lines at different months is more easily seen in the faceted barplot?
+  * Now we can also compare the different Lines **within** a particular month easily too. For example, we can read off who the top carrier for each airport is easily using a single horizontal line.
 
-**`r paste0("(LC", chap, ".", (lc <- lc + 1), ")")`** What information about the different carriers at different airports is more easily seen in the faceted barplot?
-
-```{asis lc-barplot-facet-solutions, include=show_solutions('3-14')}
-**Learning Check Solutions**  
-
-* **`r paste0("(LC", chap, ".", (lc - 1), ")")` Why is the faceted barplot preferred to the side-by-side and stacked barplots in this case?** Not that different than using side-by-side; depends on how you want to organize your presentation.
-* **`r paste0("(LC", chap, ".", (lc), ")")` What information about the different carriers at different airports is more easily seen in the faceted barplot?** Now we can also compare the different carriers **within** a particular airport easily too. For example, we can read off who the top carrier for each airport is easily using a single horizontal line.
-```
-
-```{block, type='learncheck', purl=FALSE}
-```
 
 ### Summary
 

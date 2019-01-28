@@ -49,6 +49,7 @@ library(ggplot2)
 library(dplyr)
 library(ggmap)
 library(lubridate)
+library(stringr)
 ```
 
 
@@ -165,7 +166,7 @@ Was this what you expected?
 
 ```r
 ggplot(data = railrides,
-       mapping = aes(x = Month, y = Avg_Weekday_Ridership,group=Line, color=Line)) +
+       mapping = aes(x = Month, y = Avg_Weekday_Ridership, group=Line, color=Line)) +
   geom_line() 
 ```
 
@@ -382,7 +383,7 @@ This lesson introduces using transit data to measure the reliability of a transi
 * We will map each station’s reliability
 * We will only be looking at one month of the year to keep the data a manageable size.
 * We are working with this file `TDashboardData_reliability_20160301-20160331.csv` in your  Working Directory
-* Look at the Data Dictionary < https://massdot.app.box.com/v/dashboard-data-dictionary> This PDF describes all the fields in the dataset. 
+* Look at the Data Dictionary <https://massdot.app.box.com/v/dashboard-data-dictionary> This PDF describes all the fields in the dataset. 
 * MBTA did a good job documenting their data. You may find other datasets have poor documentation. In these cases, you will need to investigate what the fields mean by searching the internet or contacting the organization that produces the data.
 
 > ## Reading Data Dictionary
@@ -393,22 +394,304 @@ This lesson introduces using transit data to measure the reliability of a transi
 > The OTP_DENOMINATOR for rail is the estimated number of total passengers on that day for that transit station.
 {: .callout}
 
-#### First steps - Prepare the data
+### Data 
 
-* Many say 60-80% of the work in a data science project is spent in preparing the data for analysis 
+For this exercise we will be using the data provided by <https://transitdatatoolkit.com/lessons/reliability/>. This data was prepared by using some R scripts. For next week's class, we will walk through how the data was made. 
 
-We first want to work with the reliability data.
+Let's load the data: 
 
-1. Take `rawdata` and pipe through `filter()`
-1. Filter by peak service (weekday rush hour)
-1. Filter by only the green line
-1. Mutate to create or overwrite a variable 
-1. str_trim to remove whitespaces before and after values
-1. Create a rely variable that 
-1. Finds the reliability at each station
-1. Divides the numerator (people who have to wait too long) by the denominator (all riders).
-1. This is the percentage of people who had to wait. 1 - this ratio is the percentage of people who didn't.
-1. drop the columns we don't need for futher analysis
+
+```r
+ relydata <- read_csv('data/mbta_rely_joined_data.csv')
+```
+
+```
+## Parsed with column specification:
+## cols(
+##   X1 = col_double(),
+##   STOP = col_character(),
+##   SERVICE_DATE = col_character(),
+##   ROUTE_OR_LINE = col_character(),
+##   ROUTE_TYPE = col_character(),
+##   OTP_NUMERATOR = col_double(),
+##   OTP_DENOMINATOR = col_double(),
+##   rely = col_double(),
+##   OBJECTID = col_double(),
+##   LINE = col_character(),
+##   TERMINUS = col_character(),
+##   ROUTE = col_character(),
+##   LONGITUDE = col_double(),
+##   LATITUDE = col_double()
+## )
+```
+
+We are using the `ggmap` package for mapping this data.  Note, there are a bunch of packages that use the `ggplot2` framework (grammar of graphics). ggmap is one of them and it specifically, is a collection of functions to visualize spatial data and models on top of static maps from various online sources (e.g Google Maps and Stamen Maps). It includes tools common to those tasks, including functions for geolocation and routing.
+
+We need to install and import it to use it.
+
+
+```r
+#install.packages('ggmap')
+library(ggmap)
+```
+
+Now we can start to map our data. First, we need to create a bounding box. To do this we need to define this by longitude and latitude sets around Boston. 
+
+
+
+```r
+# Map the Green Line
+map_lat <- c(42.481411, 42.21244)
+map_lon <- c(-71.484765, -70.794937)
+```
+
+Once defined, we can set a variable for the bounding box: 
+
+
+```r
+map_bbox <- make_bbox(map_lon,map_lat, f= 0.05)
+```
+
+Then we need to use the `get_map` function from `ggmap` to retrieve a base map. 
+
+
+```r
+mbta_map <- get_map(map_bbox, source="stamen", maptype="watercolor", zoom=12) 
+```
+
+```
+## 54 tiles needed, this may take a while (try a smaller zoom).
+```
+
+```
+## Map from URL : http://tile.stamen.com/watercolor/12/1234/1512.jpg
+```
+
+```
+## Map from URL : http://tile.stamen.com/watercolor/12/1235/1512.jpg
+```
+
+```
+## Map from URL : http://tile.stamen.com/watercolor/12/1236/1512.jpg
+```
+
+```
+## Map from URL : http://tile.stamen.com/watercolor/12/1237/1512.jpg
+```
+
+```
+## Map from URL : http://tile.stamen.com/watercolor/12/1238/1512.jpg
+```
+
+```
+## Map from URL : http://tile.stamen.com/watercolor/12/1239/1512.jpg
+```
+
+```
+## Map from URL : http://tile.stamen.com/watercolor/12/1240/1512.jpg
+```
+
+```
+## Map from URL : http://tile.stamen.com/watercolor/12/1241/1512.jpg
+```
+
+```
+## Map from URL : http://tile.stamen.com/watercolor/12/1242/1512.jpg
+```
+
+```
+## Map from URL : http://tile.stamen.com/watercolor/12/1234/1513.jpg
+```
+
+```
+## Map from URL : http://tile.stamen.com/watercolor/12/1235/1513.jpg
+```
+
+```
+## Map from URL : http://tile.stamen.com/watercolor/12/1236/1513.jpg
+```
+
+```
+## Map from URL : http://tile.stamen.com/watercolor/12/1237/1513.jpg
+```
+
+```
+## Map from URL : http://tile.stamen.com/watercolor/12/1238/1513.jpg
+```
+
+```
+## Map from URL : http://tile.stamen.com/watercolor/12/1239/1513.jpg
+```
+
+```
+## Map from URL : http://tile.stamen.com/watercolor/12/1240/1513.jpg
+```
+
+```
+## Map from URL : http://tile.stamen.com/watercolor/12/1241/1513.jpg
+```
+
+```
+## Map from URL : http://tile.stamen.com/watercolor/12/1242/1513.jpg
+```
+
+```
+## Map from URL : http://tile.stamen.com/watercolor/12/1234/1514.jpg
+```
+
+```
+## Map from URL : http://tile.stamen.com/watercolor/12/1235/1514.jpg
+```
+
+```
+## Map from URL : http://tile.stamen.com/watercolor/12/1236/1514.jpg
+```
+
+```
+## Map from URL : http://tile.stamen.com/watercolor/12/1237/1514.jpg
+```
+
+```
+## Map from URL : http://tile.stamen.com/watercolor/12/1238/1514.jpg
+```
+
+```
+## Map from URL : http://tile.stamen.com/watercolor/12/1239/1514.jpg
+```
+
+```
+## Map from URL : http://tile.stamen.com/watercolor/12/1240/1514.jpg
+```
+
+```
+## Map from URL : http://tile.stamen.com/watercolor/12/1241/1514.jpg
+```
+
+```
+## Map from URL : http://tile.stamen.com/watercolor/12/1242/1514.jpg
+```
+
+```
+## Map from URL : http://tile.stamen.com/watercolor/12/1234/1515.jpg
+```
+
+```
+## Map from URL : http://tile.stamen.com/watercolor/12/1235/1515.jpg
+```
+
+```
+## Map from URL : http://tile.stamen.com/watercolor/12/1236/1515.jpg
+```
+
+```
+## Map from URL : http://tile.stamen.com/watercolor/12/1237/1515.jpg
+```
+
+```
+## Map from URL : http://tile.stamen.com/watercolor/12/1238/1515.jpg
+```
+
+```
+## Map from URL : http://tile.stamen.com/watercolor/12/1239/1515.jpg
+```
+
+```
+## Map from URL : http://tile.stamen.com/watercolor/12/1240/1515.jpg
+```
+
+```
+## Map from URL : http://tile.stamen.com/watercolor/12/1241/1515.jpg
+```
+
+```
+## Map from URL : http://tile.stamen.com/watercolor/12/1242/1515.jpg
+```
+
+```
+## Map from URL : http://tile.stamen.com/watercolor/12/1234/1516.jpg
+```
+
+```
+## Map from URL : http://tile.stamen.com/watercolor/12/1235/1516.jpg
+```
+
+```
+## Map from URL : http://tile.stamen.com/watercolor/12/1236/1516.jpg
+```
+
+```
+## Map from URL : http://tile.stamen.com/watercolor/12/1237/1516.jpg
+```
+
+```
+## Map from URL : http://tile.stamen.com/watercolor/12/1238/1516.jpg
+```
+
+```
+## Map from URL : http://tile.stamen.com/watercolor/12/1239/1516.jpg
+```
+
+```
+## Map from URL : http://tile.stamen.com/watercolor/12/1240/1516.jpg
+```
+
+```
+## Map from URL : http://tile.stamen.com/watercolor/12/1241/1516.jpg
+```
+
+```
+## Map from URL : http://tile.stamen.com/watercolor/12/1242/1516.jpg
+```
+
+```
+## Map from URL : http://tile.stamen.com/watercolor/12/1234/1517.jpg
+```
+
+```
+## Map from URL : http://tile.stamen.com/watercolor/12/1235/1517.jpg
+```
+
+```
+## Map from URL : http://tile.stamen.com/watercolor/12/1236/1517.jpg
+```
+
+```
+## Map from URL : http://tile.stamen.com/watercolor/12/1237/1517.jpg
+```
+
+```
+## Map from URL : http://tile.stamen.com/watercolor/12/1238/1517.jpg
+```
+
+```
+## Map from URL : http://tile.stamen.com/watercolor/12/1239/1517.jpg
+```
+
+```
+## Map from URL : http://tile.stamen.com/watercolor/12/1240/1517.jpg
+```
+
+```
+## Map from URL : http://tile.stamen.com/watercolor/12/1241/1517.jpg
+```
+
+```
+## Map from URL : http://tile.stamen.com/watercolor/12/1242/1517.jpg
+```
+
+finally, we can create the map using the `ggmap` function from `ggmap`. This works a lot like `ggplot2`. 
+
+
+```r
+mbta_subway <- ggmap(mbta_map) + 
+  geom_point(data=relydata, aes(x=LONGITUDE, y=LATITUDE, color=rely), size=3, shape=15) + 
+  scale_colour_gradientn(colours=c(rgb(1,1,1),rgb(0,0.45,0.70))) 
+mbta_subway <- mbta_subway +   labs(title="MBTA Green Line Reliability", 
+                                    caption="Data Source: MBTA Developer Portal")
+mbta_subway
+```
+
+<img src="figure/unnamed-chunk-17-1.png" title="plot of chunk unnamed-chunk-17" alt="plot of chunk unnamed-chunk-17" width="\textwidth" />
 
 
 

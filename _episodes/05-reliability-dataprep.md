@@ -54,9 +54,13 @@ library(dplyr)
 library(stringr)
 ```
 
-## R Markdown
+#### First steps - Prepare the data
 
-We are now going to prepare our reliabitliy data for analysis and mapping by filtering it by type of service, create a reliability metric based on a calculations of two variables in our datset, and then pulling in latitude and longitude from another table. 
+* We are now going to prepare our reliabitliy data for analysis and mapping by: 
+  * filtering it by type of service, 
+  * creating a reliability metric based on a calculations of two variables in our datset, 
+  * and then pulling in latitude and longitude for stops from another dataset.  
+* Many say 60-80% of the work in a data science project is spent in preparing the data for analysis 
 
 To begin let's read in the datasets we will need to work with. This will be two:
 
@@ -107,9 +111,9 @@ stations <- read_csv("data/mbta_stations.csv")
 #View(stations)
 ```
 
-We first want to work with the reliability data.
+We first want to work with the reliability data, e.g. `rawdata`. Here are the steps we want to perform on `rawdata`:
 
-1. Take rawdata and pipe through filter
+1. Take `rawdata` and pipe through `filter()`
 1. Filter by peak service (weekday rush hour)
 1. Filter by only the green line
 1. Mutate to create or overwrite a variable 
@@ -124,17 +128,48 @@ We first want to work with the reliability data.
 ```r
 rawdata %>% 
   filter(PEAK_OFFPEAK_IND == "Peak Service (Weekdays 6:30-9:30AM, 3:30PM-6:30PM)", ROUTE_TYPE=="Green Line" ) %>% 
-  mutate(STOP = str_trim(STOP), rely = 1 - OTP_NUMERATOR/OTP_DENOMINATOR, rely = round(rely, 4)) %>% 
-  select(-c("SERVICE_DATE","ROUTE_TYPE")) %>% 
-  
+  mutate(STOP = str_trim(STOP), rely = 1 - OTP_NUMERATOR/OTP_DENOMINATOR, rely = round(rely, 4))
 ```
 
 ```
-## Error: <text>:6:0: unexpected end of input
-## 4:   select(-c("SERVICE_DATE","ROUTE_TYPE")) %>% 
-## 5:   
-##   ^
+## # A tibble: 1,738 x 10
+##    SERVICE_DATE PEAK_OFFPEAK_IND MODE_TYPE ROUTE_OR_LINE ROUTE_TYPE STOP 
+##    <chr>        <chr>            <chr>     <chr>         <chr>      <chr>
+##  1 01-MAR-2016  Peak Service (W… Rail      Green-B Line  Green Line Bost…
+##  2 01-MAR-2016  Peak Service (W… Rail      Green-B Line  Green Line Chis…
+##  3 01-MAR-2016  Peak Service (W… Rail      Green-E Line  Green Line Prud…
+##  4 01-MAR-2016  Peak Service (W… Rail      Green-B Line  Green Line Bost…
+##  5 01-MAR-2016  Peak Service (W… Rail      Green-B Line  Green Line Kenm…
+##  6 01-MAR-2016  Peak Service (W… Rail      Green-B Line  Green Line Pack…
+##  7 01-MAR-2016  Peak Service (W… Rail      Green-D Line  Green Line Boyl…
+##  8 01-MAR-2016  Peak Service (W… Rail      Green-E Line  Green Line Nort…
+##  9 01-MAR-2016  Peak Service (W… Rail      Green-E Line  Green Line Rive…
+## 10 01-MAR-2016  Peak Service (W… Rail      Green-B Line  Green Line Boyl…
+## # … with 1,728 more rows, and 4 more variables: METRIC_TYPE <chr>,
+## #   OTP_NUMERATOR <dbl>, OTP_DENOMINATOR <dbl>, rely <dbl>
 ```
+
+
+> ## Why did we select the ROUTE_TYPE instead of the ROUTE_OR_LINE?
+>
+> We are interested in the Green Line. Do both fields include the Green Line? If so, are there any differences?
+>
+> > ## Solution
+> > Answer: Looking at the data frame, you can see that in the ROUTE_OR_LINE field, the B, C, D, and E branches of the Green Line are listed separately. Whereas in ROUTE_TYPE, the Green Line has the same name for each branch. We do not need the specific branch for this analysis. Therefore, we will use the ROUTE_TYPE field. Note: You might discover that we need the specific branch to answer a question in the future. In this case, you will have to go back and edit your R program. This iterative process occurs often in data wrangling, and is another reason to write good comments as you program.
+> {: .solution}
+{: .challenge}
+
+> ## What is happening in the `mutate()` function? 
+> There are two variables that are created: `STOP` and `rely`.
+> 1. What does `str_strip` do?
+> 2. How is `rely` defined? HINT: Look at the Data Dictionary < https://massdot.app.box.com/v/dashboard-data-dictionary> again.
+> 
+>> ## Solution
+>> 1. `mutate` creates new variables in the dataframe, but we can also use it to overwrite existing ones. `str_strip` from the stringR package strips trailing and leading white spaces. So we are running that function on `STOP` to clean out white spaces and then over-writing it on itself. 
+>> 2. `rely` comes directing from the Data Dictionary: 
+>> “Passenger wait time” for rail means the numerator reflects passengers who waited too long, so numerator/denominator= % pass. waiting too long ; subtract from 1 to get % pass. waiting acceptable amount of time
+
+
 
 ## Adding Geolocation data to the dataframe via another table
 

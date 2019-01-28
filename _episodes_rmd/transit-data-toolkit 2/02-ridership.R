@@ -3,10 +3,11 @@ install.packages('ggplot2', dependencies = TRUE)
 
 # Load ggplot into current session
 library(ggplot2)
+library(readr)
 
 # Read in MBTA ridership csv file
 rawdata <- read.csv(file="./mbta_ridership_2016.csv", head=TRUE,sep=",")
-View(rawdata)
+#View(rawdata)
 
 # Select Rail (subway) Rows
 railrides <- rawdata[which (rawdata$MODE_TYPE =="RAIL"),]

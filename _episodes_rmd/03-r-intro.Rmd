@@ -226,3 +226,6 @@ What you use is up to you, but **be consistent**.
 > > ```
 > {: .solution}
 {: .challenge}
+
+## Getting Data into R
+

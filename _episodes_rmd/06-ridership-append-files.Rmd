@@ -1,0 +1,35 @@
+---
+title: "Append csv Files into One Dataframe"
+author: "Tim Dennis"
+date: "2019-01-27"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Load needed package
+
+```{r load-packages}
+library(tidyverse)
+```
+
+* The problem is that we have a number of ridership files by date as csv. We want to get those together into one. In this example we'll use the `purrr` package `map_dfr` function to return data frames created by **row-binding** together the files. Note that this is possible b/c the csv files are the same shape: have identical columns, etc.
+
+```{r}
+# List all files ending with csv in directory
+csv_files = list.files(path = 'data/mbtaridership_2016/', pattern = "csv$", full.names = TRUE)
+# Read each csv file into a list
+ridership <- map_dfr(csv_files, read_csv)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(ridership)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.

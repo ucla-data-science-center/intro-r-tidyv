@@ -1,7 +1,6 @@
 ---
 title: "Data Wrangling via dplyr"
 author: "Tim Dennis"
-date: "10/15/2018"
 output: html_document
 ---
 ```{r images, include=FALSE}

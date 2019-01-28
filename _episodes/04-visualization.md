@@ -122,11 +122,7 @@ rider_rawdata <- read_csv('data/mbta_ridership2016.csv')
 ```
 
 ```r
-View(rider_rawdata)
-```
-
-```
-## Error in View(rider_rawdata): X11 is not available
+#View(rider_rawdata)
 ```
 
 * Most frequently used when the x-axis represents time and the y-axis represents some other numerical variable; such plots are known as *time series*.  
@@ -210,25 +206,25 @@ ggplot(data = railrides,
 
 ### Summary
 
-Linegraphs, just like scatterplots, display the relationship between two numerical variables. However, the variable on the x-axis (i.e. the explanatory variable) should have a natural ordering, like some notion of time.  We can mislead our audience if that isn't the case.
+Linegraphs display the relationship between two numerical variables. However, the variable on the x-axis (i.e. the explanatory variable) should have a natural ordering, like some notion of time.  We can mislead our audience if that isn't the case.
 
 
-## Barplots {#geombar}
+## Barplots
 
 ### Barplots via geom_bar/geom_col
 
 Stating the above differently:
 
 * When the categorical variable you want to plot is not pre-counted in your data frame you need to use `geom_bar()`.
-* When the categorical variable is pre-counted (in the above `fruits_counted` example in the variable `number`), you need to use `geom_col()` with the `y` aesthetic explicitly mapped.
+* When the categorical variable is pre-counted, you need to use `geom_col()` with the `y` aesthetic explicitly mapped.
 
 
-In this table, the counts of the carriers are pre-counted. To create a barplot using the data frame `railrides`, we
+In this table, the counts of the `Lines` are pre-counted in `Avg_Weekday_Ridership`. To create a barplot using the data frame `railrides`, we
 
 * use `geom_col()` instead of `geom_bar()`
-* map the `y` aesthetic to the variable `number`.
+* map the `y` aesthetic to the variable `Avg_Weekday_Ridership`.
 
-Compare this barplot using `geom_col` in Figure \@ref(fig:flightscol) with the earlier barplot using `geom_bar` in Figure \@ref(fig:flightsbar). They are identical. However the input data we used for these are different.
+
 
 
 ```r
@@ -236,8 +232,17 @@ ggplot(data = railrides, mapping = aes(x = Line, y = Avg_Weekday_Ridership, fill
   geom_col() + facet_grid(~Month) 
 ```
 
-<img src="figure/flightscol-1.png" title="(ref:geomcol)" alt="(ref:geomcol)" width="\textwidth" />
+<img src="figure/railrides-bar-1.png" title="(ref:geomcol)" alt="(ref:geomcol)" width="\textwidth" />
+Like the line graph we can control the colors manually, but this time we need to use `scale_fill_manual()` 
 
+
+```r
+ggplot(data = railrides, mapping = aes(x = Line, y = Avg_Weekday_Ridership, fill=Line)) +
+  geom_col() + 
+  scale_fill_manual(name="LINE",values=c("BLUE LINE"="blue","GREEN LINE"="green","ORANGE LINE"="orange","RED LINE"="red"))
+```
+
+<img src="figure/railrides-bar-color-1.png" title="(ref:geomcol)" alt="(ref:geomcol)" width="\textwidth" />
 
 <div class="learncheck">
 **_Learning check_**
@@ -245,11 +250,9 @@ ggplot(data = railrides, mapping = aes(x = Line, y = Avg_Weekday_Ridership, fill
 
 **(LC3.3)** Why are histograms inappropriate for visualizing categorical variables?
 
-**(LC3.4)** What is the difference between histograms and barplots?
+**(LC3.4)** How many Envoy Air flights departed NYC in 2013?
 
-**(LC3.5)** How many Envoy Air flights departed NYC in 2013?
-
-**(LC3.6)** What was the seventh highest airline in terms of departed flights from NYC in 2013? How could we better present the table to get this answer quickly?
+**(LC3.5)** What was the seventh highest airline in terms of departed flights from NYC in 2013? How could we better present the table to get this answer quickly?
 
 
 
@@ -270,12 +273,29 @@ Barplots are the go-to way to visualize the frequency of different categories of
 
 ```r
 ggplot(data = railrides,
-       mapping = aes(x = Line, y=Avg_Weekday_Ridership, fill = Line)) +
+       mapping = aes(x = Line, y=Avg_Weekday_Ridership, fill = Month)) +
   geom_col()  +
- scale_color_manual(name="Line",values=c("BLUE LINE"="blue","GREEN LINE"="green","ORANGE LINE"="orange","RED LINE"="red"))
+ scale_fill_manual(name="Line",values=c("BLUE LINE"="blue","GREEN LINE"="green","ORANGE LINE"="orange","RED LINE"="red"))
 ```
 
-<img src="figure/unnamed-chunk-7-1.png" title="Stacked barplot comparing the number of flights by carrier and airport" alt="Stacked barplot comparing the number of flights by carrier and airport" width="\textwidth" />
+```
+## Error: Continuous value supplied to discrete scale
+```
+
+<img src="figure/unnamed-chunk-7-1.png" title="Stacked barplot comparing the Avg. Weekday Ridership by Line and Month" alt="Stacked barplot comparing the Avg. Weekday Ridership by Line and Month" width="\textwidth" />
+Ok, what happened here? 
+
+* R is treating Month as a continuous variable (a number), when we want a category - known in R as a factor. 
+* We can make R treat Month as a factor on the fly by wrapping it in the `factor()` function
+
+
+```r
+ggplot(data = railrides,
+       mapping = aes(x = Line, y=Avg_Weekday_Ridership, fill = factor(Month))) +
+  geom_col()  
+```
+
+<img src="figure/unnamed-chunk-8-1.png" title="Stacked barplot comparing the Avg. Weekday Ridership by Line and Month" alt="Stacked barplot comparing the Avg. Weekday Ridership by Line and Month" width="\textwidth" />
 
 This plot is what is known as a *stacked barplot*.  While simple to make, it often leads to many problems. For example in this plot, it is difficult to compare the heights of the different colors (corresponding to the number of flights from each airport) between the bars (corresponding to the different carriers).
 
@@ -283,9 +303,9 @@ This plot is what is known as a *stacked barplot*.  While simple to make, it oft
 **_Learning check_**
 </div>
 
-**(LC3.7)** What kinds of questions are not easily answered by looking at the above figure?
+**(LC3.6)** What kinds of questions are not easily answered by looking at the above figure?
 
-**(LC3.8)** What can you say, if anything, about the relationship between airline and airport in NYC in 2013 in regards to the number of departing flights?
+**(LC3.7)** What can you say, if anything, about the relationship between airline and airport in NYC in 2013 in regards to the number of departing flights?
 
 
 
@@ -302,16 +322,16 @@ ggplot(data = railrides,
   geom_col(position = "dodge")
 ```
 
-<img src="figure/unnamed-chunk-9-1.png" title="Side-by-side AKA dodged barplot comparing the number of flights by carrier and airport" alt="Side-by-side AKA dodged barplot comparing the number of flights by carrier and airport" width="\textwidth" />
+<img src="figure/unnamed-chunk-10-1.png" title="Side-by-side AKA dodged barplot comparing the number of flights by carrier and airport" alt="Side-by-side AKA dodged barplot comparing the number of flights by carrier and airport" width="\textwidth" />
 
 
 <div class="learncheck">
 **_Learning check_**
 </div>
 
-**(LC3.9)** Why might the side-by-side (AKA dodged) barplot be preferable to a stacked barplot in this case?
+**(LC3.8)** Why might the side-by-side (AKA dodged) barplot be preferable to a stacked barplot in this case?
 
-**(LC3.10)** What are the disadvantages of using a side-by-side (AKA dodged) barplot, in general?
+**(LC3.9)** What are the disadvantages of using a side-by-side (AKA dodged) barplot, in general?
 
 
 <div class="learncheck">
@@ -325,19 +345,21 @@ Lastly, an often preferred type of barplot is the *faceted barplot*. This concep
 ggplot(data = railrides,
        mapping = aes(x = Line, y = Avg_Weekday_Ridership, fill = Line)) +
   geom_col() +
-  facet_wrap(~ month(Month, label=T), nrow = 5)
+  facet_wrap(~ month(Month, label=T), nrow = 5) +
+  scale_fill_manual(name="Line",values=c("BLUE LINE"="blue","GREEN LINE"="green","ORANGE LINE"="orange","RED LINE"="red"))
 ```
 
 <img src="figure/facet-bar-vert-1.png" title="Faceted barplot comparing the number of flights by carrier and airport" alt="Faceted barplot comparing the number of flights by carrier and airport" width="\textwidth" />
 
+We did a few things here to clean it up. I used `lubridates` (a package to work with dates) function `month` function to turn our month into a better label. this happens inside the facet function. 
 
 <div class="learncheck">
 **_Learning check_**
 </div>
 
-**(LC3.11)** Why is the faceted barplot preferred to the side-by-side and stacked barplots in this case?
+**(LC3.10)** Why is the faceted barplot preferred to the side-by-side and stacked barplots in this case?
 
-**(LC3.12)** What information about the different carriers at different airports is more easily seen in the faceted barplot?
+**(LC3.11)** What information about the different carriers at different airports is more easily seen in the faceted barplot?
 
 
 
@@ -351,6 +373,42 @@ Barplots are the preferred way of displaying categorical variables.  They are ea
 
 
 ### Mapping with reliabitliy data 
+
+Source: Largely taken from <http://transitdatatoolkit.com/lessons/reliability/>, but coe rewritten in a tidyverse manner. 
+
+This lesson introduces using transit data to measure the reliability of a transit system. In this lesson, we will be using R and RStudio. If you haven’t set up these tools.
+
+* We will be using MBTA Wait Time Reliability data for the Green Line to examine the peak hour reliability of each station served by Boston’s Green Line for this lesson
+* We will map each station’s reliability
+* We will only be looking at one month of the year to keep the data a manageable size.
+* We are working with this file `TDashboardData_reliability_20160301-20160331.csv` in your  Working Directory
+* Look at the Data Dictionary < https://massdot.app.box.com/v/dashboard-data-dictionary> This PDF describes all the fields in the dataset. 
+* MBTA did a good job documenting their data. You may find other datasets have poor documentation. In these cases, you will need to investigate what the fields mean by searching the internet or contacting the organization that produces the data.
+
+> ## Reading Data Dictionary
+> Read the definitions of “OTP_NUMERATOR” and “OTP_DENOMINATOR” for “rail.” What data do these fields contain?
+>
+> The OTP_NUMERATOR for rail is the estimated number of passengers on that day for that transit station, whose wait time was longer than scheduled.
+>
+> The OTP_DENOMINATOR for rail is the estimated number of total passengers on that day for that transit station.
+{: .callout}
+
+#### First steps - Prepare the data
+
+* Many say 60-80% of the work in a data science project is spent in preparing the data for analysis 
+
+We first want to work with the reliability data.
+
+1. Take `rawdata` and pipe through `filter()`
+1. Filter by peak service (weekday rush hour)
+1. Filter by only the green line
+1. Mutate to create or overwrite a variable 
+1. str_trim to remove whitespaces before and after values
+1. Create a rely variable that 
+1. Finds the reliability at each station
+1. Divides the numerator (people who have to wait too long) by the denominator (all riders).
+1. This is the percentage of people who had to wait. 1 - this ratio is the percentage of people who didn't.
+1. drop the columns we don't need for futher analysis
 
 
 

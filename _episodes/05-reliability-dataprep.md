@@ -65,8 +65,6 @@ To begin let's read in the datasets we will need to work with. This will be two:
 
 
 
-
-
 ```r
 #read in MBTA performance csv file
 rawdata <- read_csv("data/TDashboardData_reliability_20160301-20160331.csv")
@@ -105,19 +103,8 @@ stations <- read_csv("data/mbta_stations.csv")
 ```
 
 ```r
-View(rawdata)
-```
-
-```
-## Error in View(rawdata): X11 is not available
-```
-
-```r
-View(stations)
-```
-
-```
-## Error in View(stations): X11 is not available
+#View(rawdata)
+#View(stations)
 ```
 
 We first want to work with the reliability data.

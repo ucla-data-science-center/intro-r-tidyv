@@ -121,6 +121,7 @@ library(ggplot2)
 library(dplyr)
 library(ggmap)
 library(lubridate)
+library(stringr)
 ```
 
 ```{r message=FALSE, warning=FALSE, echo=FALSE}
@@ -222,7 +223,7 @@ Was this what you expected?
 
 ```{r avg_weekday_ride_line, fig.cap="Avg. Weekday MBTA Subway Ridership 2016"}
 ggplot(data = railrides,
-       mapping = aes(x = Month, y = Avg_Weekday_Ridership,group=Line, color=Line)) +
+       mapping = aes(x = Month, y = Avg_Weekday_Ridership, group=Line, color=Line)) +
   geom_line() 
 ```
 
@@ -430,7 +431,7 @@ This lesson introduces using transit data to measure the reliability of a transi
 * We will map each station’s reliability
 * We will only be looking at one month of the year to keep the data a manageable size.
 * We are working with this file `TDashboardData_reliability_20160301-20160331.csv` in your  Working Directory
-* Look at the Data Dictionary < https://massdot.app.box.com/v/dashboard-data-dictionary> This PDF describes all the fields in the dataset. 
+* Look at the Data Dictionary <https://massdot.app.box.com/v/dashboard-data-dictionary> This PDF describes all the fields in the dataset. 
 * MBTA did a good job documenting their data. You may find other datasets have poor documentation. In these cases, you will need to investigate what the fields mean by searching the internet or contacting the organization that produces the data.
 
 > ## Reading Data Dictionary
@@ -441,22 +442,58 @@ This lesson introduces using transit data to measure the reliability of a transi
 > The OTP_DENOMINATOR for rail is the estimated number of total passengers on that day for that transit station.
 {: .callout}
 
-#### First steps - Prepare the data
+### Data 
 
-* Many say 60-80% of the work in a data science project is spent in preparing the data for analysis 
+For this exercise we will be using the data provided by <https://transitdatatoolkit.com/lessons/reliability/>. This data was prepared by using some R scripts. For next week's class, we will walk through how the data was made. 
 
-We first want to work with the reliability data.
+Let's load the data: 
 
-1. Take `rawdata` and pipe through `filter()`
-1. Filter by peak service (weekday rush hour)
-1. Filter by only the green line
-1. Mutate to create or overwrite a variable 
-1. str_trim to remove whitespaces before and after values
-1. Create a rely variable that 
-1. Finds the reliability at each station
-1. Divides the numerator (people who have to wait too long) by the denominator (all riders).
-1. This is the percentage of people who had to wait. 1 - this ratio is the percentage of people who didn't.
-1. drop the columns we don't need for futher analysis
+```{r read_rely_joined_data}
+
+ relydata <- read_csv('data/mbta_rely_joined_data.csv')
+
+```
+
+We are using the `ggmap` package for mapping this data.  Note, there are a bunch of packages that use the `ggplot2` framework (grammar of graphics). ggmap is one of them and it specifically, is a collection of functions to visualize spatial data and models on top of static maps from various online sources (e.g Google Maps and Stamen Maps). It includes tools common to those tasks, including functions for geolocation and routing.
+
+We need to install and import it to use it.
+
+```{r}
+#install.packages('ggmap')
+library(ggmap)
+```
+
+Now we can start to map our data. First, we need to create a bounding box. To do this we need to define this by longitude and latitude sets around Boston. 
+
+
+```{r}
+# Map the Green Line
+map_lat <- c(42.481411, 42.21244)
+map_lon <- c(-71.484765, -70.794937)
+```
+
+Once defined, we can set a variable for the bounding box: 
+
+```{r}
+map_bbox <- make_bbox(map_lon,map_lat, f= 0.05)
+```
+
+Then we need to use the `get_map` function from `ggmap` to retrieve a base map. 
+
+```{r}
+mbta_map <- get_map(map_bbox, source="stamen", maptype="watercolor", zoom=12) 
+```
+
+finally, we can create the map using the `ggmap` function from `ggmap`. This works a lot like `ggplot2`. 
+
+```{r}
+mbta_subway <- ggmap(mbta_map) + 
+  geom_point(data=relydata, aes(x=LONGITUDE, y=LATITUDE, color=rely), size=3, shape=15) + 
+  scale_colour_gradientn(colours=c(rgb(1,1,1),rgb(0,0.45,0.70))) 
+mbta_subway <- mbta_subway +   labs(title="MBTA Green Line Reliability", 
+                                    caption="Data Source: MBTA Developer Portal")
+mbta_subway
+```
 
 
 

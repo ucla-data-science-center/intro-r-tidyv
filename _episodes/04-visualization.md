@@ -21,7 +21,6 @@ source: Rmd
 ---
 
 
-```
 
 
 ## Introduction
@@ -42,7 +41,7 @@ Let's load all the packages needed for this chapter (this assumes you've already
 
 
 ~~~
-library(nycflights13)
+#library(nycflights13)
 library(ggplot2)
 library(dplyr)
 library(ggmap)

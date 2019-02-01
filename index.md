@@ -3,7 +3,7 @@ layout: lesson
 root: .
 ---
 
-Introduction to R for non-programmers.
+Introduction to R for non-programmers. This lesson set was prepared for Planning Code Camp at UCLA. 
 
 The goal of this lesson is to teach novice programmers to write modular code and best practices for using R for data analysis.
 

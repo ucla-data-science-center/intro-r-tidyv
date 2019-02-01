@@ -39,14 +39,14 @@ library(stringr)
 
 * We are now going to prepare our reliabitliy data for analysis and mapping by: 
   * filtering it by type of service, 
-  * creating a reliability metric based on a calculations of two variables in our datset, 
+  * creating a reliability metric based on a calculation of two variables in our datset, 
   * and then pulling in latitude and longitude for stops from another dataset.  
 * Many say 60-80% of the work in a data science project is spent in preparing the data for analysis 
 
 To begin let's read in the datasets we will need to work with. This will be two:
 
 1. `TDashboardData_reliability_20160301-20160331.csv` downloaded via mbta online
-2. `mbta_stations.csv` provided by ...
+2. `mbta_stations.csv` 
 
 
 ```{r}
@@ -59,15 +59,13 @@ stations <- read_csv("data/mbta_stations.csv")
 
 We first want to work with the reliability data, e.g. `rawdata`. Here are the steps we want to perform on `rawdata`:
 
-1. Take `rawdata` and pipe through `filter()`
-1. Filter by peak service (weekday rush hour)
-1. Filter by only the green line
-1. Mutate to create or overwrite a variable 
-1. str_trim to remove whitespaces before and after values
-1. Create a rely variable that 
-1. Finds the reliability at each station
+1. Take `rawdata` and pipe it through `filter()`
+1. Filter by peak service (weekday rush hours) and by the green line
+1. Create a variable and overwrite a variable:
+  1. str_trim to remove whitespaces before and after values
+  1. Create a rely variable that finds the reliability at each station
 1. Divides the numerator (people who have to wait too long) by the denominator (all riders).
-1. This is the percentage of people who had to wait. 1 - this ratio is the percentage of people who didn't.
+1. This is the percentage of people who had to wait. Subtract this ratio from 1 to get the percentage of people who didn't.
 1. drop the columns we don't need for futher analysis
 
 ```{r reliability-data-clean}

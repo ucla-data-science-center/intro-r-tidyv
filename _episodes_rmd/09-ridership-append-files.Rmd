@@ -5,8 +5,9 @@ date: "2019-01-27"
 output: html_document
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+```{r, include=FALSE}
+source("../bin/chunk-options.R")
+knitr_fig_path("09-")
 ```
 
 ## Load needed package

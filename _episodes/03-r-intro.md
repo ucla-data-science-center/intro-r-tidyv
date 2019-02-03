@@ -234,20 +234,6 @@ We can also do comparison in R:
 ~~~
 {: .output}
 
-
-~~~
-1 <= 1  # less than or equal to
-~~~
-{: .language-r}
-
-
-
-~~~
-[1] TRUE
-~~~
-{: .output}
-
-
 ## Variables and assignment
 
 * We can store values in variables using the assignment operator `<-`, like this. 
@@ -353,6 +339,3 @@ What you use is up to you, but **be consistent**.
 > > {: .language-r}
 > {: .solution}
 {: .challenge}
-
-## Getting Data into R
-

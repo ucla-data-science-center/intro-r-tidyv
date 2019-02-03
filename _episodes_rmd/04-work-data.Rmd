@@ -1,0 +1,157 @@
+---
+title: "Working with Data"
+author: "Tim Dennis"
+date: "2019-01-28"
+output: html_document
+---
+
+```{r, include=FALSE}
+source("../bin/chunk-options.R")
+knitr_fig_path("04-")
+```
+
+## Explore your first dataset {#nycflights13}
+
+* Let's put everything we've learned so far into practice and start exploring some real data! 
+* Data comes to us in a variety of formats, from pictures to text to numbers.  
+* we'll focus on datasets that are saved in "spreadsheet"-type format; this is probably the most common way data are collected and saved in many fields.  
+* these "spreadsheet"-type datasets are called _data frames_ in R; we will focus on working with data saved as data frames throughout this book.
+
+* Let's first load all the packages needed for this chapter, assuming you've already installed them. 
+
+```{r message=FALSE}
+library(nycflights13)
+library(dplyr)
+library(knitr)
+```
+
+* At the beginning of all subsequent chapters in this text, we'll always have a list of packages that you should have installed and loaded to work with that chapter's R code. 
+
+### `nycflights13` package
+
+* Many of us have flown on airplanes or know someone who has.
+* And you know or have experienced that some flights are delayed because of a variety of conditions. 
+* Are there ways that we can avoid having to deal with these flight delays?  
+
+today, we're going to analyze data related to flights contained in the `nycflights13` package [@R-nycflights13].
+* this package contains five data sets saved in five separate data frames with information about all domestic flights departing from New York City in 2013. 
+* These include **Newark Liberty International (EWR)**, **John F. Kennedy International (JFK)**, and **LaGuardia (LGA)** airports:
+
+* `flights`: Information on all `r scales::comma(nrow(nycflights13::flights))` flights
+* `airlines`: A table matching airline names and their two letter IATA airline codes (also known as carrier codes) for `r nrow(nycflights13::airlines)` airline companies
+* `planes`: Information about each of `r scales::comma(nrow(nycflights13::planes))` physical aircraft used.
+* `weather`: Hourly meteorological data for each of the three NYC airports. This data frame has `r scales::comma(nrow(nycflights13::weather))` rows, roughtly corresponding to the 365 $\times$ 24 $\times$ 3 = 26,280 possible hourly measurements one can observe at three locations over the course of a year.
+* `airports`: Airport names, codes, and locations for `r scales::comma(nrow(nycflights13::airports))` destination airports.
+
+### `flights` data frame
+
+* We will begin by exploring the `flights` data frame that is included in the `nycflights13` package and getting an idea of its structure. 
+* Run the following code in your console (either by typing it or cutting & pasting it): it loads in the `flights` dataset into your Console. 
+* Note depending on the size of your monitor, the output may vary slightly. 
+
+```{r load_flights}
+flights
+```
+
+Let's unpack this output:
+
+* `A tibble: 336,776 x 19`: A `tibble` is a kind of data frame used in R. This particular data frame has
+    + `336,776` rows
+    + `19` columns corresponding to 19 variables describing each observation
+* `year month day dep_time sched_dep_time dep_delay arr_time` are different columns, in other words variables, of this data frame.
+* We then have the first 10 rows of observations corresponding to 10 flights.
+* `... with 336,766 more rows, and 11 more variables:` indicating to us that 336,766 more rows of data and 11 more variables could not fit in this screen.
+
+### Exploring data frames 
+
+Among the many ways of getting a feel for the data contained in a data frame such as `flights`, we present three functions that take as their "argument", in other words their input, the data frame in question. We also include a fourth method for exploring one particular column of a data frame:
+
+1. Using the `View()` function built for use in RStudio. We will use this the most.
+1. Using the `glimpse()` function, which is included in the `dplyr` package.
+1. Using the `kable()` function,  which is included in the `knitr` package.
+1. Using the `$` operator to view a single variable in a data frame.
+
+**1. `View()`**:
+
+Run `View(flights)` in your Console in RStudio, either by typing it or cutting & pasting it into the Console pane, and explore this data frame in the resulting pop-up viewer. You should get into the habit of always `View`ing any data frames that come your way.  Note the capital "V" in `View`.  R is case-sensitive so you'll receive an error is you run `view(flights)` instead of `View(flights)`.
+
+```{block lc2-2, type='learncheck'}
+**_Learning check_**
+```
+
+
+- A. Data on an airline 
+- B. Data on a flight
+- C. Data on an airport
+- D. Data on multiple flights
+
+```{block, type='learncheck'}
+```
+
+* By running `View(flights)`, we see the different *variables* listed in the columns and we see that there are different types of variables.  
+* Some of the variables like `distance`, `day`, and `arr_delay` are what we will call *quantitative* variables. 
+* These variables are numerical in nature.  Other variables here are *categorical*.
+
+* Note that if you look in the leftmost column of the `View(flights)` output, you will see a column of numbers.  
+* These are the row numbers of the dataset.  
+* If you glance across a row with the same number, say row 5, you can get an idea of what each row corresponds to.
+* This is often called the *observational unit*.  
+* The *observational unit* in this example is an individual flight departing New York City in 2013.  
+* You can identify the observational unit by determining what "thing" is being measured or described by each of the variables.
+
+**2. `glimpse()`**:
+
+The second way to explore a data frame is using the `glimpse()` function included in the `dplyr` package. Thus, you can only use the `glimpse()` function after you've loaded the `dplyr` package. This function provides us with an alternative method for exploring a data frame than the `View()` function:
+
+```{r}
+glimpse(flights)
+```
+
+* `glimpse()` will give you the first few entries of each variable in a row after the variable. 
+* the *data type* of the variable is given immediately after each variable's name inside `< >`.  
+* `int` and `dbl` refer to "integer" and "double", which are computer coding terminology for quantitative/numerical variables.  
+* `chr` refers to "character", which is computer terminology for text data. Text data, such as the `carrier` or `origin` of a flight, are categorical variables. 
+* The `time_hour` variable is an example of one more type of data type: `dttm`. 
+
+```{block lc2-3, type='learncheck'}
+**_Learning check_**
+```
+
+ What are some examples in this dataset of **categorical** variables?  What makes them different than **quantitative** variables?
+
+```{block, type='learncheck'}
+```
+
+**3. `kable()`**:
+
+* The final way to explore the entirety of a data frame is using the `kable()` function from the `knitr` package. 
+* Let's explore the different carrier codes for all the airlines in our dataset two ways. 
+* Run both of these lines of code in your Console:
+
+```{r eval=FALSE}
+airlines
+kable(airlines)
+```
+
+At first glance, it may not appear that there is much difference in the outputs. However when using tools for document production such as [R Markdown](http://rmarkdown.rstudio.com/lesson-1.html), the latter code produces output that is much more legible and reader-friendly. 
+
+**4. `$` operator**
+
+Lastly, the `$` operator allows us to explore a single variable within a data frame. For example, run the following in your console
+
+```{r eval=FALSE}
+airlines
+airlines$name
+```
+
+* We used the `$` operator to extract only the `name` variable and return it as a vector of length 16.
+* We will only be occasionally exploring data frames using this operator, instead favoring the `View()` and `glimpse()` functions.
+
+### Help files
+
+* You can get help in R by entering a `?` before the name of a function or data frame in question and you will be presented with a page showing the documentation. Like so: 
+
+```{r eval=FALSE}
+?flights
+```
+

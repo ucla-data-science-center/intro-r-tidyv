@@ -3,6 +3,12 @@ title: "Data Wrangling via dplyr"
 author: "Tim Dennis"
 output: html_document
 ---
+
+```{r, include=FALSE}
+source("../bin/chunk-options.R")
+knitr_fig_path("07-")
+```
+
 ```{r images, include=FALSE}
 include_image <- function(path,                           
                           html_opts = "width=45%", 

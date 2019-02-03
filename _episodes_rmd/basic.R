@@ -1,0 +1,16 @@
+library(nycflights13)
+kable(airlines,format=html)
+?kable
+mean(c(1, 2, 3))
+mean(c(2, 4, 5, 6))
+median(c(4, 4, 7, 8, 9, 10))
+median()
+?median
+dim()
+str()
+sum(c(4, 5, 6, 8))
+summary(c(4, 5, 6, 8))
+names(airlines)
+dim(airlines)
+head(airlines)
+tail(airlines)

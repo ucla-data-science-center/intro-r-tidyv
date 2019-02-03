@@ -17,7 +17,7 @@ source: Rmd
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 source("../bin/chunk-options.R")
-knitr_fig_path("05-")
+knitr_fig_path("03-")
 ```
 
 ## Using R as a calculator
@@ -146,11 +146,6 @@ We can also do comparison in R:
 1 < 2  # less than
 ```
 
-```{r}
-1 <= 1  # less than or equal to
-```
-
-
 ## Variables and assignment
 
 * We can store values in variables using the assignment operator `<-`, like this. 
@@ -233,6 +228,3 @@ What you use is up to you, but **be consistent**.
 > > ```
 > {: .solution}
 {: .challenge}
-
-## Getting Data into R
-

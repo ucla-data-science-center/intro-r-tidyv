@@ -19,12 +19,12 @@ keypoints:
 - "Use `dplyr` to filter our data"
 source: Rmd
 ---
-
-```{r setup, include=FALSE}
-# Install ggplot and ggmap (this is only required once)
-#install.packages('ggplot2', dependencies = TRUE)
-#install.packages('ggmap', dependencies = TRUE)
+```{r, include=FALSE}
+source("../bin/chunk-options.R")
+knitr_fig_path("07-")
 ```
+
+
 
 ```{r packages}
 # load packages

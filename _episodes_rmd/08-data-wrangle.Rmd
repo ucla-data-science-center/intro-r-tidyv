@@ -6,7 +6,7 @@ output: html_document
 
 ```{r, include=FALSE}
 source("../bin/chunk-options.R")
-knitr_fig_path("07-")
+knitr_fig_path("08-")
 ```
 
 ```{r images, include=FALSE}

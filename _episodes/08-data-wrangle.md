@@ -635,7 +635,7 @@ ggplot(data = flights, mapping = aes(x = gain)) +
 ~~~
 {: .language-r}
 
-<img src="../fig/rmd-07-unnamed-chunk-49-1.png" title="Histogram of gain variable" alt="Histogram of gain variable" width="\textwidth" style="display: block; margin: auto;" />
+<img src="../fig/rmd-08-unnamed-chunk-49-1.png" title="Histogram of gain variable" alt="Histogram of gain variable" width="\textwidth" style="display: block; margin: auto;" />
 
 We can also create multiple columns at once and even refer to columns that were just created in a new column.  Hadley and Garrett produce one such example in Chapter 5 of "R for Data Science" [@rds2016]:
 

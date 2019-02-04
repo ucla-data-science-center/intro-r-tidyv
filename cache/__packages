@@ -1,0 +1,17 @@
+base
+remotes
+requirements
+knitr
+ggplot2
+tidycensus
+tidyverse
+tibble
+tidyr
+readr
+purrr
+dplyr
+stringr
+forcats
+bindrcpp
+leaflet
+sf

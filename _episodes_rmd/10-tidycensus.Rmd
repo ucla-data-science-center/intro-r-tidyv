@@ -1,0 +1,172 @@
+---
+title: "Using tidycensus and leaflet to map Census data"
+date: 2017-06-24
+slug: "using-tidycensus"
+tags: [rstats]
+---
+
+```{r, include=FALSE}
+source("../bin/chunk-options.R")
+knitr_fig_path("10-")
+```
+
+```{r setup, include=FALSE}
+library(knitr)
+knitr::opts_chunk$set(cache = TRUE, warning = FALSE, message = FALSE, 
+                      echo = TRUE, dpi = 180)
+options(width=80, dplyr.width = 150)
+library(ggplot2)
+#library(silgelib)
+#theme_set(theme_roboto())
+```
+
+NOTE: This material is taken and altered from Julia Silge's @juliasilge blog 
+
+## What? - Demo how tidycensus works to bring data in from the Census
+
+* Kyle Walker's [tidycensus](https://github.com/walkerke/tidycensus) R package makes it easy to bring census data into R as a dataframe.
+
+<blockquote class="twitter-tweet" data-lang="en"><p lang="en" dir="ltr">There should be a word for &quot;the regret felt when an R 📦, which would have saved untold hours of your life, is released&quot;… <a href="https://twitter.com/hashtag/rstats?src=hash">#rstats</a> 🤔 <a href="https://t.co/2THN4MwedO">https://t.co/2THN4MwedO</a></p>&mdash; Mara Averick (@dataandme) <a href="https://twitter.com/dataandme/status/869968290688376832">May 31, 2017</a></blockquote>
+<script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+
+* We'll walk through how this works in practice.  
+* Before this package existed, you'd need to finda and extract or download the census data prior to reading into r. 
+
+
+
+## Exercising my joygret
+
+* Before running code like the following from tidycensus, you need to [obtain an API key](http://api.census.gov/data/key_signup.html) from the Census and then use the function `census_api_key()` to set it in R.
+* Let's look at California population data by country. 
+
+```{r}
+library(tidycensus)
+census_api_key('84a27ded9e2459a6cc58d5f739003fa2824a18c2')
+```
+
+```{r texas_pop}
+library(tidyverse)
+library(tidycensus)
+
+texas_pop <- get_acs(geography = "county", 
+                     variables = "B01003_001", 
+                     state = "CA",
+                     geometry = TRUE) 
+
+texas_pop
+```
+
+* The total population in each county in Texas, in a tidyverse-ready data frame.
+* If you want to get information for multiple states, [just use purrr](https://walkerke.github.io/2017/05/tidycensus-every-tract/). 
+* The US Census tabulates lots of [important kinds of information](https://www.census.gov/programs-surveys/acs/guidance/subjects.html) here in the United States, although there has been troubling [uncertainty](https://www.theatlantic.com/politics/archive/2017/05/census-director-resigns-2020-funding-concern/526107/) about [leadership and funding](https://www.washingtonpost.com/local/social-issues/us-census-director-resigns-amid-turmoil-over-funding-of-2020-count/2017/05/09/8f8657c6-34ea-11e7-b412-62beef8121f7_story.html) there in recent months.
+
+* So we have this data in a form that will be easy to manipulate; what if we want to map it? 
+* Kyle Walker again has this taken care of, with his tigris package (a dependency of tidycensus); if you set `geometry = TRUE` the way that I did when I downloaded the Census data above, tigris handles downloading the shapefiles from the Census, with support for `sf` [simple features](https://github.com/edzer/sfr). 
+* Kyle has a vignette for [mapping using ggplot2](https://walkerke.github.io/tidycensus/articles/spatial-data.html), but you can also pipe straight into leaflet.
+
+```{r dependson="texas_pop"}
+library(leaflet)
+library(stringr)
+library(sf)
+
+pal <- colorQuantile(palette = "viridis", domain = texas_pop$estimate, n = 10)
+
+texas_pop %>%
+    st_transform(crs = "+init=epsg:4326") %>%
+    leaflet(width = "100%") %>%
+    addProviderTiles(provider = "CartoDB.Positron") %>%
+    addPolygons(popup = ~ str_extract(NAME, "^([^,]*)"),
+                stroke = FALSE,
+                smoothFactor = 0,
+                fillOpacity = 0.7,
+                color = ~ pal(estimate)) %>%
+    addLegend("bottomright", 
+              pal = pal, 
+              values = ~ estimate,
+              title = "Population percentiles",
+              opacity = 1)
+```
+
+**What is that `st_transform` doing?**
+
+* It is doing a projection onto a certain reference system of the spatial information contained in the `sf` column.
+* The specific choice of an [EPSG code of 4326](https://gis.stackexchange.com/questions/3334/what-is-the-difference-between-wgs84-and-epsg4326) is for a given projection.
+
+## A couple more examples
+
+* Let's look at the counties in Utah (where I live) while we're at it. Let's map color to population here, instead of quantiles, just for something different.
+
+```{r}
+utah_pop <- get_acs(geography = "county", 
+                    variables = "B01003_001", 
+                    state = "UT",
+                    geometry = TRUE)
+
+pal <- colorNumeric(palette = "plasma", 
+                    domain = utah_pop$estimate)
+
+utah_pop %>%
+    st_transform(crs = "+init=epsg:4326") %>%
+    leaflet(width = "100%") %>%
+    addProviderTiles(provider = "CartoDB.Positron") %>%
+    addPolygons(popup = ~ str_extract(NAME, "^([^,]*)"),
+                stroke = FALSE,
+                smoothFactor = 0,
+                fillOpacity = 0.7,
+                color = ~ pal(estimate)) %>%
+    addLegend("bottomright", 
+              pal = pal, 
+              values = ~ estimate,
+              title = "County Populations",
+              opacity = 1)
+```
+
+Yep, that is right, although still remarkable to me. Utah is largely an extremely rural state, with lots of people here in Salt Lake City where I live and then in the corridor to the north and south.
+
+There is so much other information available from the Census. For example, what if I want to look at the median home value in Salt Lake County, at the census tract level?
+
+```{r}
+slc_value <- get_acs(geography = "tract", 
+                    variables = "B25077_001", 
+                    state = "UT",
+                    county = "Salt Lake County",
+                    geometry = TRUE)
+
+pal <- colorNumeric(palette = "viridis", 
+                    domain = slc_value$estimate)
+
+slc_value %>%
+    st_transform(crs = "+init=epsg:4326") %>%
+    leaflet(width = "100%") %>%
+    addProviderTiles(provider = "CartoDB.Positron") %>%
+    addPolygons(popup = ~ str_extract(NAME, "^([^,]*)"),
+                stroke = FALSE,
+                smoothFactor = 0,
+                fillOpacity = 0.7,
+                color = ~ pal(estimate)) %>%
+    addLegend("bottomright", 
+              pal = pal, 
+              values = ~ estimate,
+              title = "Median Home Value",
+              labFormat = labelFormat(prefix = "$"),
+              opacity = 1)
+```
+
+The two census tracts with `NA` values are the airport on the west side and the University of Utah on the east side. You can very obviously see the east-to-west gradient that comes as no surprise to us locals, and that priciest tract is up against one of the canyons with beautiful views. But mainly please notice with what ease I made this interactive map!
+
+
+```{r orange_county}
+library(tidycensus)
+library(tidyverse)
+library(sf)
+
+# Get dataset with geometry set to TRUE
+orange_value <- get_acs(geography = "tract", state = "CA", 
+                    county = "Los Angeles", 
+                    variables = "B25077_001", 
+                    geometry = TRUE)
+
+# Plot the estimate to view a map of the data
+plot(orange_value["estimate"])
+```
+

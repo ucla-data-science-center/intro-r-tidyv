@@ -9,7 +9,7 @@ exercises: 15
 questions: 
 - "How can I read visualize data in R?"
 keypoints:
-- "Use `ggplot2` to create plots ."
+- "Use `ggplot2` to create plots."
 - "Think about graphics in layers: aesthetics, geometry, statistics, scale transformation and grouping"
 objectives:
 - "To be able to use ggplot2 to generate publication quality graphics."

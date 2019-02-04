@@ -11,7 +11,7 @@ tags: [rstats]
 
 
 
-NOTE: This material is taken and altered from Julia Silge's @juliasilge blog 
+NOTE: This material is taken and altered from Julia Silge's @juliasilge blog and datacamp's [Analyzing US Census Data in R](https://www.datacamp.com/courses/analyzing-us-census-data-in-r)
 
 ## What? - Demo how tidycensus works to bring data in from the Census
 
@@ -21,11 +21,9 @@ NOTE: This material is taken and altered from Julia Silge's @juliasilge blog
 <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
 
 * We'll walk through how this works in practice.  
-* Before this package existed, you'd need to finda and extract or download the census data prior to reading into r. 
+* Before this package existed, you'd need to find and extract or download the census data prior to reading into R as a dataframe. 
 
-
-
-## Exercising my joygret
+## First steps
 
 * Before running code like the following from tidycensus, you need to [obtain an API key](http://api.census.gov/data/key_signup.html) from the Census and then use the function `census_api_key()` to set it in R.
 * Let's look at California population data by country. 
@@ -42,7 +40,7 @@ census_api_key('84a27ded9e2459a6cc58d5f739003fa2824a18c2')
 library(tidyverse)
 library(tidycensus)
 
-texas_pop <- get_acs(geography = "county", 
+california_pop <- get_acs(geography = "county", 
                      variables = "B01003_001", 
                      state = "CA",
                      geometry = TRUE) 
@@ -52,396 +50,54 @@ texas_pop <- get_acs(geography = "county",
 
 
 ~~~
-
-  |                                                                            
-  |                                                                      |   0%
-  |                                                                            
-  |                                                                      |   1%
-  |                                                                            
-  |=                                                                     |   1%
-  |                                                                            
-  |=                                                                     |   2%
-  |                                                                            
-  |==                                                                    |   2%
-  |                                                                            
-  |==                                                                    |   3%
-  |                                                                            
-  |===                                                                   |   4%
-  |                                                                            
-  |===                                                                   |   5%
-  |                                                                            
-  |====                                                                  |   5%
-  |                                                                            
-  |====                                                                  |   6%
-  |                                                                            
-  |=====                                                                 |   6%
-  |                                                                            
-  |=====                                                                 |   7%
-  |                                                                            
-  |=====                                                                 |   8%
-  |                                                                            
-  |======                                                                |   8%
-  |                                                                            
-  |======                                                                |   9%
-  |                                                                            
-  |=======                                                               |   9%
-  |                                                                            
-  |=======                                                               |  10%
-  |                                                                            
-  |=======                                                               |  11%
-  |                                                                            
-  |========                                                              |  11%
-  |                                                                            
-  |========                                                              |  12%
-  |                                                                            
-  |=========                                                             |  12%
-  |                                                                            
-  |=========                                                             |  13%
-  |                                                                            
-  |=========                                                             |  14%
-  |                                                                            
-  |==========                                                            |  14%
-  |                                                                            
-  |==========                                                            |  15%
-  |                                                                            
-  |===========                                                           |  15%
-  |                                                                            
-  |===========                                                           |  16%
-  |                                                                            
-  |============                                                          |  16%
-  |                                                                            
-  |============                                                          |  17%
-  |                                                                            
-  |============                                                          |  18%
-  |                                                                            
-  |=============                                                         |  18%
-  |                                                                            
-  |=============                                                         |  19%
-  |                                                                            
-  |==============                                                        |  19%
-  |                                                                            
-  |==============                                                        |  20%
-  |                                                                            
-  |==============                                                        |  21%
-  |                                                                            
-  |===============                                                       |  21%
-  |                                                                            
-  |===============                                                       |  22%
-  |                                                                            
-  |================                                                      |  22%
-  |                                                                            
-  |================                                                      |  23%
-  |                                                                            
-  |================                                                      |  24%
-  |                                                                            
-  |=================                                                     |  24%
-  |                                                                            
-  |=================                                                     |  25%
-  |                                                                            
-  |==================                                                    |  25%
-  |                                                                            
-  |==================                                                    |  26%
-  |                                                                            
-  |===================                                                   |  27%
-  |                                                                            
-  |===================                                                   |  28%
-  |                                                                            
-  |====================                                                  |  28%
-  |                                                                            
-  |====================                                                  |  29%
-  |                                                                            
-  |=====================                                                 |  29%
-  |                                                                            
-  |=====================                                                 |  30%
-  |                                                                            
-  |=====================                                                 |  31%
-  |                                                                            
-  |======================                                                |  31%
-  |                                                                            
-  |======================                                                |  32%
-  |                                                                            
-  |=======================                                               |  32%
-  |                                                                            
-  |=======================                                               |  33%
-  |                                                                            
-  |========================                                              |  34%
-  |                                                                            
-  |========================                                              |  35%
-  |                                                                            
-  |=========================                                             |  35%
-  |                                                                            
-  |=========================                                             |  36%
-  |                                                                            
-  |==========================                                            |  36%
-  |                                                                            
-  |==========================                                            |  37%
-  |                                                                            
-  |==========================                                            |  38%
-  |                                                                            
-  |===========================                                           |  38%
-  |                                                                            
-  |===========================                                           |  39%
-  |                                                                            
-  |============================                                          |  39%
-  |                                                                            
-  |============================                                          |  40%
-  |                                                                            
-  |============================                                          |  41%
-  |                                                                            
-  |=============================                                         |  41%
-  |                                                                            
-  |=============================                                         |  42%
-  |                                                                            
-  |==============================                                        |  42%
-  |                                                                            
-  |==============================                                        |  43%
-  |                                                                            
-  |===============================                                       |  44%
-  |                                                                            
-  |===============================                                       |  45%
-  |                                                                            
-  |================================                                      |  45%
-  |                                                                            
-  |================================                                      |  46%
-  |                                                                            
-  |=================================                                     |  46%
-  |                                                                            
-  |=================================                                     |  47%
-  |                                                                            
-  |=================================                                     |  48%
-  |                                                                            
-  |==================================                                    |  48%
-  |                                                                            
-  |==================================                                    |  49%
-  |                                                                            
-  |===================================                                   |  49%
-  |                                                                            
-  |===================================                                   |  50%
-  |                                                                            
-  |===================================                                   |  51%
-  |                                                                            
-  |====================================                                  |  51%
-  |                                                                            
-  |====================================                                  |  52%
-  |                                                                            
-  |=====================================                                 |  52%
-  |                                                                            
-  |=====================================                                 |  53%
-  |                                                                            
-  |=====================================                                 |  54%
-  |                                                                            
-  |======================================                                |  54%
-  |                                                                            
-  |======================================                                |  55%
-  |                                                                            
-  |=======================================                               |  55%
-  |                                                                            
-  |=======================================                               |  56%
-  |                                                                            
-  |========================================                              |  57%
-  |                                                                            
-  |========================================                              |  58%
-  |                                                                            
-  |=========================================                             |  58%
-  |                                                                            
-  |=========================================                             |  59%
-  |                                                                            
-  |==========================================                            |  59%
-  |                                                                            
-  |==========================================                            |  60%
-  |                                                                            
-  |==========================================                            |  61%
-  |                                                                            
-  |===========================================                           |  61%
-  |                                                                            
-  |===========================================                           |  62%
-  |                                                                            
-  |============================================                          |  62%
-  |                                                                            
-  |============================================                          |  63%
-  |                                                                            
-  |============================================                          |  64%
-  |                                                                            
-  |=============================================                         |  64%
-  |                                                                            
-  |=============================================                         |  65%
-  |                                                                            
-  |==============================================                        |  65%
-  |                                                                            
-  |==============================================                        |  66%
-  |                                                                            
-  |===============================================                       |  67%
-  |                                                                            
-  |===============================================                       |  68%
-  |                                                                            
-  |================================================                      |  68%
-  |                                                                            
-  |================================================                      |  69%
-  |                                                                            
-  |=================================================                     |  69%
-  |                                                                            
-  |=================================================                     |  70%
-  |                                                                            
-  |=================================================                     |  71%
-  |                                                                            
-  |==================================================                    |  71%
-  |                                                                            
-  |==================================================                    |  72%
-  |                                                                            
-  |===================================================                   |  72%
-  |                                                                            
-  |===================================================                   |  73%
-  |                                                                            
-  |====================================================                  |  74%
-  |                                                                            
-  |====================================================                  |  75%
-  |                                                                            
-  |=====================================================                 |  75%
-  |                                                                            
-  |=====================================================                 |  76%
-  |                                                                            
-  |======================================================                |  76%
-  |                                                                            
-  |======================================================                |  77%
-  |                                                                            
-  |======================================================                |  78%
-  |                                                                            
-  |=======================================================               |  78%
-  |                                                                            
-  |=======================================================               |  79%
-  |                                                                            
-  |========================================================              |  79%
-  |                                                                            
-  |========================================================              |  80%
-  |                                                                            
-  |========================================================              |  81%
-  |                                                                            
-  |=========================================================             |  81%
-  |                                                                            
-  |=========================================================             |  82%
-  |                                                                            
-  |==========================================================            |  82%
-  |                                                                            
-  |==========================================================            |  83%
-  |                                                                            
-  |==========================================================            |  84%
-  |                                                                            
-  |===========================================================           |  84%
-  |                                                                            
-  |===========================================================           |  85%
-  |                                                                            
-  |============================================================          |  85%
-  |                                                                            
-  |============================================================          |  86%
-  |                                                                            
-  |=============================================================         |  86%
-  |                                                                            
-  |=============================================================         |  87%
-  |                                                                            
-  |=============================================================         |  88%
-  |                                                                            
-  |==============================================================        |  88%
-  |                                                                            
-  |==============================================================        |  89%
-  |                                                                            
-  |===============================================================       |  89%
-  |                                                                            
-  |===============================================================       |  90%
-  |                                                                            
-  |===============================================================       |  91%
-  |                                                                            
-  |================================================================      |  91%
-  |                                                                            
-  |================================================================      |  92%
-  |                                                                            
-  |=================================================================     |  92%
-  |                                                                            
-  |=================================================================     |  93%
-  |                                                                            
-  |=================================================================     |  94%
-  |                                                                            
-  |==================================================================    |  94%
-  |                                                                            
-  |==================================================================    |  95%
-  |                                                                            
-  |===================================================================   |  95%
-  |                                                                            
-  |===================================================================   |  96%
-  |                                                                            
-  |====================================================================  |  97%
-  |                                                                            
-  |====================================================================  |  98%
-  |                                                                            
-  |===================================================================== |  98%
-  |                                                                            
-  |===================================================================== |  99%
-  |                                                                            
-  |======================================================================|  99%
-  |                                                                            
-  |======================================================================| 100%
+Error in get_acs(geography = "county", variables = "B01003_001", state = "CA", : A Census API key is required.  Obtain one at http://api.census.gov/data/key_signup.html, and then supply the key to the `census_api_key` function to use it throughout your tidycensus session.
 ~~~
-{: .output}
+{: .error}
 
 
 
 ~~~
-texas_pop
+california_pop
 ~~~
 {: .language-r}
 
 
 
 ~~~
-Simple feature collection with 58 features and 5 fields
-geometry type:  MULTIPOLYGON
-dimension:      XY
-bbox:           xmin: -124.4096 ymin: 32.53416 xmax: -114.1312 ymax: 42.00952
-epsg (SRID):    4269
-proj4string:    +proj=longlat +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +no_defs
-First 10 features:
-   GEOID                            NAME   variable estimate moe
-1  06001      Alameda County, California B01003_001  1629615  NA
-2  06003       Alpine County, California B01003_001     1203 179
-3  06005       Amador County, California B01003_001    37306  NA
-4  06007        Butte County, California B01003_001   225207  NA
-5  06009    Calaveras County, California B01003_001    45057  NA
-6  06011       Colusa County, California B01003_001    21479  NA
-7  06013 Contra Costa County, California B01003_001  1123678  NA
-8  06015    Del Norte County, California B01003_001    27442  NA
-9  06017    El Dorado County, California B01003_001   185015  NA
-10 06019       Fresno County, California B01003_001   971616  NA
-                         geometry
-1  MULTIPOLYGON (((-122.3423 3...
-2  MULTIPOLYGON (((-120.0724 3...
-3  MULTIPOLYGON (((-121.0274 3...
-4  MULTIPOLYGON (((-122.0687 3...
-5  MULTIPOLYGON (((-120.9936 3...
-6  MULTIPOLYGON (((-122.7851 3...
-7  MULTIPOLYGON (((-122.4298 3...
-8  MULTIPOLYGON (((-124.2175 4...
-9  MULTIPOLYGON (((-121.141 38...
-10 MULTIPOLYGON (((-120.9094 3...
+Error in eval(expr, envir, enclos): object 'california_pop' not found
 ~~~
-{: .output}
+{: .error}
 
-* The total population in each county in Texas, in a tidyverse-ready data frame.
+* The total population in each county in California, in a tidyverse-ready data frame.
 * If you want to get information for multiple states, [just use purrr](https://walkerke.github.io/2017/05/tidycensus-every-tract/). 
-* The US Census tabulates lots of [important kinds of information](https://www.census.gov/programs-surveys/acs/guidance/subjects.html) here in the United States, although there has been troubling [uncertainty](https://www.theatlantic.com/politics/archive/2017/05/census-director-resigns-2020-funding-concern/526107/) about [leadership and funding](https://www.washingtonpost.com/local/social-issues/us-census-director-resigns-amid-turmoil-over-funding-of-2020-count/2017/05/09/8f8657c6-34ea-11e7-b412-62beef8121f7_story.html) there in recent months.
+* The US Census tabulates lots of [important kinds of information](https://www.census.gov/programs-surveys/acs/guidance/subjects.html) in the United States.
 
 * So we have this data in a form that will be easy to manipulate; what if we want to map it? 
-* Kyle Walker again has this taken care of, with his tigris package (a dependency of tidycensus); if you set `geometry = TRUE` the way that I did when I downloaded the Census data above, tigris handles downloading the shapefiles from the Census, with support for `sf` [simple features](https://github.com/edzer/sfr). 
+* Kyle Walker again has this taken care of, with his `tigris` package (a dependency of tidycensus); if you set `geometry = TRUE` the way that I did when I downloaded the Census data above, `tigris` handles downloading the shapefiles from the Census, with support for `sf` [simple features](https://github.com/edzer/sfr). 
 * Kyle has a vignette for [mapping using ggplot2](https://walkerke.github.io/tidycensus/articles/spatial-data.html), but you can also pipe straight into leaflet.
 
 
 ~~~
-library(leaflet)
+library(leaflet) # a javascript frame work for mapping 
 library(stringr)
 library(sf)
 
-pal <- colorQuantile(palette = "viridis", domain = texas_pop$estimate, n = 10)
+pal <- colorQuantile(palette = "viridis", domain = california_pop$estimate, n = 10)
+~~~
+{: .language-r}
 
-texas_pop %>%
-    st_transform(crs = "+init=epsg:4326") %>%
+
+
+~~~
+Error in colorQuantile(palette = "viridis", domain = california_pop$estimate, : object 'california_pop' not found
+~~~
+{: .error}
+
+
+
+~~~
+california_pop %>%
+    st_transform(crs = "+init=epsg:4326") %>% #cordinate ref system 
     leaflet(width = "100%") %>%
     addProviderTiles(provider = "CartoDB.Positron") %>%
     addPolygons(popup = ~ str_extract(NAME, "^([^,]*)"),
@@ -460,7 +116,7 @@ texas_pop %>%
 
 
 ~~~
-Error in file(con, "rb"): cannot open the connection
+Error in eval(lhs, parent, parent): object 'california_pop' not found
 ~~~
 {: .error}
 
@@ -507,9 +163,9 @@ Error in file(con, "rb"): cannot open the connection
 ~~~
 {: .error}
 
-Yep, that is right, although still remarkable to me. Utah is largely an extremely rural state, with lots of people here in Salt Lake City where I live and then in the corridor to the north and south.
+* Utah is largely an extremely rural state, with lots of people  in Salt Lake City and then in the corridor to the north and south.
 
-There is so much other information available from the Census. For example, what if I want to look at the median home value in Salt Lake County, at the census tract level?
+* There is so much other information available from the Census. For example, what if I want to look at the median home value in Salt Lake County, at the census tract level?
 
 
 ~~~
@@ -655,7 +311,10 @@ Error in file(con, "rb"): cannot open the connection
 ~~~
 {: .error}
 
-The two census tracts with `NA` values are the airport on the west side and the University of Utah on the east side. You can very obviously see the east-to-west gradient that comes as no surprise to us locals, and that priciest tract is up against one of the canyons with beautiful views. But mainly please notice with what ease I made this interactive map!
+* The two census tracts with `NA` values are the airport on the west side and the University of Utah on the east side. You can very obviously see the east-to-west gradient 
+* and that priciest tract is up against one of the canyons with beautiful views. But mainly please notice with what ease I made this interactive map!
+
+## Los Angeles example 
 
 
 
@@ -665,7 +324,7 @@ library(tidyverse)
 library(sf)
 
 # Get dataset with geometry set to TRUE
-orange_value <- get_acs(geography = "tract", state = "CA", 
+los_ang_value <- get_acs(geography = "tract", state = "CA", 
                     county = "Los Angeles", 
                     variables = "B25077_001", 
                     geometry = TRUE)
@@ -675,301 +334,9 @@ orange_value <- get_acs(geography = "tract", state = "CA",
 
 
 ~~~
-
-  |                                                                            
-  |                                                                      |   0%
-  |                                                                            
-  |                                                                      |   1%
-  |                                                                            
-  |=                                                                     |   1%
-  |                                                                            
-  |=                                                                     |   2%
-  |                                                                            
-  |==                                                                    |   2%
-  |                                                                            
-  |==                                                                    |   3%
-  |                                                                            
-  |===                                                                   |   4%
-  |                                                                            
-  |===                                                                   |   5%
-  |                                                                            
-  |====                                                                  |   5%
-  |                                                                            
-  |====                                                                  |   6%
-  |                                                                            
-  |=====                                                                 |   7%
-  |                                                                            
-  |======                                                                |   8%
-  |                                                                            
-  |======                                                                |   9%
-  |                                                                            
-  |=======                                                               |  10%
-  |                                                                            
-  |=======                                                               |  11%
-  |                                                                            
-  |========                                                              |  11%
-  |                                                                            
-  |========                                                              |  12%
-  |                                                                            
-  |=========                                                             |  12%
-  |                                                                            
-  |=========                                                             |  13%
-  |                                                                            
-  |==========                                                            |  14%
-  |                                                                            
-  |==========                                                            |  15%
-  |                                                                            
-  |===========                                                           |  15%
-  |                                                                            
-  |===========                                                           |  16%
-  |                                                                            
-  |============                                                          |  16%
-  |                                                                            
-  |============                                                          |  17%
-  |                                                                            
-  |============                                                          |  18%
-  |                                                                            
-  |=============                                                         |  18%
-  |                                                                            
-  |=============                                                         |  19%
-  |                                                                            
-  |==============                                                        |  19%
-  |                                                                            
-  |==============                                                        |  20%
-  |                                                                            
-  |==============                                                        |  21%
-  |                                                                            
-  |===============                                                       |  21%
-  |                                                                            
-  |===============                                                       |  22%
-  |                                                                            
-  |================                                                      |  22%
-  |                                                                            
-  |================                                                      |  23%
-  |                                                                            
-  |=================                                                     |  24%
-  |                                                                            
-  |=================                                                     |  25%
-  |                                                                            
-  |==================                                                    |  25%
-  |                                                                            
-  |==================                                                    |  26%
-  |                                                                            
-  |===================                                                   |  27%
-  |                                                                            
-  |===================                                                   |  28%
-  |                                                                            
-  |====================                                                  |  28%
-  |                                                                            
-  |====================                                                  |  29%
-  |                                                                            
-  |=====================                                                 |  30%
-  |                                                                            
-  |=====================                                                 |  31%
-  |                                                                            
-  |======================                                                |  31%
-  |                                                                            
-  |======================                                                |  32%
-  |                                                                            
-  |=======================                                               |  32%
-  |                                                                            
-  |=======================                                               |  33%
-  |                                                                            
-  |========================                                              |  34%
-  |                                                                            
-  |========================                                              |  35%
-  |                                                                            
-  |=========================                                             |  35%
-  |                                                                            
-  |=========================                                             |  36%
-  |                                                                            
-  |==========================                                            |  37%
-  |                                                                            
-  |==========================                                            |  38%
-  |                                                                            
-  |===========================                                           |  38%
-  |                                                                            
-  |===========================                                           |  39%
-  |                                                                            
-  |============================                                          |  39%
-  |                                                                            
-  |============================                                          |  40%
-  |                                                                            
-  |=============================                                         |  41%
-  |                                                                            
-  |=============================                                         |  42%
-  |                                                                            
-  |==============================                                        |  42%
-  |                                                                            
-  |==============================                                        |  43%
-  |                                                                            
-  |===============================                                       |  44%
-  |                                                                            
-  |===============================                                       |  45%
-  |                                                                            
-  |================================                                      |  45%
-  |                                                                            
-  |================================                                      |  46%
-  |                                                                            
-  |=================================                                     |  47%
-  |                                                                            
-  |=================================                                     |  48%
-  |                                                                            
-  |==================================                                    |  48%
-  |                                                                            
-  |==================================                                    |  49%
-  |                                                                            
-  |===================================                                   |  49%
-  |                                                                            
-  |===================================                                   |  50%
-  |                                                                            
-  |===================================                                   |  51%
-  |                                                                            
-  |====================================                                  |  51%
-  |                                                                            
-  |====================================                                  |  52%
-  |                                                                            
-  |=====================================                                 |  52%
-  |                                                                            
-  |=====================================                                 |  53%
-  |                                                                            
-  |=====================================                                 |  54%
-  |                                                                            
-  |======================================                                |  54%
-  |                                                                            
-  |======================================                                |  55%
-  |                                                                            
-  |=======================================                               |  55%
-  |                                                                            
-  |=======================================                               |  56%
-  |                                                                            
-  |========================================                              |  57%
-  |                                                                            
-  |========================================                              |  58%
-  |                                                                            
-  |=========================================                             |  58%
-  |                                                                            
-  |=========================================                             |  59%
-  |                                                                            
-  |==========================================                            |  60%
-  |                                                                            
-  |===========================================                           |  61%
-  |                                                                            
-  |===========================================                           |  62%
-  |                                                                            
-  |============================================                          |  62%
-  |                                                                            
-  |============================================                          |  63%
-  |                                                                            
-  |=============================================                         |  64%
-  |                                                                            
-  |=============================================                         |  65%
-  |                                                                            
-  |==============================================                        |  65%
-  |                                                                            
-  |==============================================                        |  66%
-  |                                                                            
-  |===============================================                       |  67%
-  |                                                                            
-  |===============================================                       |  68%
-  |                                                                            
-  |================================================                      |  68%
-  |                                                                            
-  |================================================                      |  69%
-  |                                                                            
-  |=================================================                     |  69%
-  |                                                                            
-  |=================================================                     |  70%
-  |                                                                            
-  |==================================================                    |  71%
-  |                                                                            
-  |==================================================                    |  72%
-  |                                                                            
-  |===================================================                   |  72%
-  |                                                                            
-  |===================================================                   |  73%
-  |                                                                            
-  |====================================================                  |  74%
-  |                                                                            
-  |====================================================                  |  75%
-  |                                                                            
-  |=====================================================                 |  75%
-  |                                                                            
-  |=====================================================                 |  76%
-  |                                                                            
-  |======================================================                |  76%
-  |                                                                            
-  |======================================================                |  77%
-  |                                                                            
-  |======================================================                |  78%
-  |                                                                            
-  |=======================================================               |  78%
-  |                                                                            
-  |=======================================================               |  79%
-  |                                                                            
-  |========================================================              |  79%
-  |                                                                            
-  |========================================================              |  80%
-  |                                                                            
-  |========================================================              |  81%
-  |                                                                            
-  |=========================================================             |  81%
-  |                                                                            
-  |=========================================================             |  82%
-  |                                                                            
-  |==========================================================            |  82%
-  |                                                                            
-  |==========================================================            |  83%
-  |                                                                            
-  |==========================================================            |  84%
-  |                                                                            
-  |===========================================================           |  84%
-  |                                                                            
-  |===========================================================           |  85%
-  |                                                                            
-  |============================================================          |  85%
-  |                                                                            
-  |============================================================          |  86%
-  |                                                                            
-  |=============================================================         |  87%
-  |                                                                            
-  |=============================================================         |  88%
-  |                                                                            
-  |==============================================================        |  88%
-  |                                                                            
-  |==============================================================        |  89%
-  |                                                                            
-  |===============================================================       |  90%
-  |                                                                            
-  |===============================================================       |  91%
-  |                                                                            
-  |================================================================      |  91%
-  |                                                                            
-  |================================================================      |  92%
-  |                                                                            
-  |=================================================================     |  92%
-  |                                                                            
-  |=================================================================     |  93%
-  |                                                                            
-  |==================================================================    |  94%
-  |                                                                            
-  |==================================================================    |  95%
-  |                                                                            
-  |===================================================================   |  95%
-  |                                                                            
-  |===================================================================   |  96%
-  |                                                                            
-  |====================================================================  |  97%
-  |                                                                            
-  |====================================================================  |  98%
-  |                                                                            
-  |===================================================================== |  98%
-  |                                                                            
-  |===================================================================== |  99%
-  |                                                                            
-  |======================================================================| 100%
+Error in get_acs(geography = "tract", state = "CA", county = "Los Angeles", : A Census API key is required.  Obtain one at http://api.census.gov/data/key_signup.html, and then supply the key to the `census_api_key` function to use it throughout your tidycensus session.
 ~~~
-{: .output}
+{: .error}
 
 
 
@@ -979,5 +346,10 @@ plot(orange_value["estimate"])
 ~~~
 {: .language-r}
 
-<img src="../fig/rmd-10-orange_county-1.png" title="plot of chunk orange_county" alt="plot of chunk orange_county" width="1530" style="display: block; margin: auto;" />
+
+
+~~~
+Error in plot(orange_value["estimate"]): object 'orange_value' not found
+~~~
+{: .error}
 

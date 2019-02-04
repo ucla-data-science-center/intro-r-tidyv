@@ -20,7 +20,7 @@ library(ggplot2)
 #theme_set(theme_roboto())
 ```
 
-NOTE: This material is taken and altered from Julia Silge's @juliasilge blog 
+NOTE: This material is taken and altered from Julia Silge's @juliasilge blog and datacamp's [Analyzing US Census Data in R](https://www.datacamp.com/courses/analyzing-us-census-data-in-r)
 
 ## What? - Demo how tidycensus works to bring data in from the Census
 
@@ -30,11 +30,9 @@ NOTE: This material is taken and altered from Julia Silge's @juliasilge blog
 <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
 
 * We'll walk through how this works in practice.  
-* Before this package existed, you'd need to finda and extract or download the census data prior to reading into r. 
+* Before this package existed, you'd need to find and extract or download the census data prior to reading into R as a dataframe. 
 
-
-
-## Exercising my joygret
+## First steps
 
 * Before running code like the following from tidycensus, you need to [obtain an API key](http://api.census.gov/data/key_signup.html) from the Census and then use the function `census_api_key()` to set it in R.
 * Let's look at California population data by country. 
@@ -48,31 +46,31 @@ census_api_key('84a27ded9e2459a6cc58d5f739003fa2824a18c2')
 library(tidyverse)
 library(tidycensus)
 
-texas_pop <- get_acs(geography = "county", 
+california_pop <- get_acs(geography = "county", 
                      variables = "B01003_001", 
                      state = "CA",
                      geometry = TRUE) 
 
-texas_pop
+california_pop
 ```
 
-* The total population in each county in Texas, in a tidyverse-ready data frame.
+* The total population in each county in California, in a tidyverse-ready data frame.
 * If you want to get information for multiple states, [just use purrr](https://walkerke.github.io/2017/05/tidycensus-every-tract/). 
-* The US Census tabulates lots of [important kinds of information](https://www.census.gov/programs-surveys/acs/guidance/subjects.html) here in the United States, although there has been troubling [uncertainty](https://www.theatlantic.com/politics/archive/2017/05/census-director-resigns-2020-funding-concern/526107/) about [leadership and funding](https://www.washingtonpost.com/local/social-issues/us-census-director-resigns-amid-turmoil-over-funding-of-2020-count/2017/05/09/8f8657c6-34ea-11e7-b412-62beef8121f7_story.html) there in recent months.
+* The US Census tabulates lots of [important kinds of information](https://www.census.gov/programs-surveys/acs/guidance/subjects.html) in the United States.
 
 * So we have this data in a form that will be easy to manipulate; what if we want to map it? 
-* Kyle Walker again has this taken care of, with his tigris package (a dependency of tidycensus); if you set `geometry = TRUE` the way that I did when I downloaded the Census data above, tigris handles downloading the shapefiles from the Census, with support for `sf` [simple features](https://github.com/edzer/sfr). 
+* Kyle Walker again has this taken care of, with his `tigris` package (a dependency of tidycensus); if you set `geometry = TRUE` the way that I did when I downloaded the Census data above, `tigris` handles downloading the shapefiles from the Census, with support for `sf` [simple features](https://github.com/edzer/sfr). 
 * Kyle has a vignette for [mapping using ggplot2](https://walkerke.github.io/tidycensus/articles/spatial-data.html), but you can also pipe straight into leaflet.
 
-```{r dependson="texas_pop"}
-library(leaflet)
+```{r dependson="calif_pop"}
+library(leaflet) # a javascript frame work for mapping 
 library(stringr)
 library(sf)
 
-pal <- colorQuantile(palette = "viridis", domain = texas_pop$estimate, n = 10)
+pal <- colorQuantile(palette = "viridis", domain = california_pop$estimate, n = 10)
 
-texas_pop %>%
-    st_transform(crs = "+init=epsg:4326") %>%
+california_pop %>%
+    st_transform(crs = "+init=epsg:4326") %>% #cordinate ref system 
     leaflet(width = "100%") %>%
     addProviderTiles(provider = "CartoDB.Positron") %>%
     addPolygons(popup = ~ str_extract(NAME, "^([^,]*)"),
@@ -121,9 +119,9 @@ utah_pop %>%
               opacity = 1)
 ```
 
-Yep, that is right, although still remarkable to me. Utah is largely an extremely rural state, with lots of people here in Salt Lake City where I live and then in the corridor to the north and south.
+* Utah is largely an extremely rural state, with lots of people  in Salt Lake City and then in the corridor to the north and south.
 
-There is so much other information available from the Census. For example, what if I want to look at the median home value in Salt Lake County, at the census tract level?
+* There is so much other information available from the Census. For example, what if I want to look at the median home value in Salt Lake County, at the census tract level?
 
 ```{r}
 slc_value <- get_acs(geography = "tract", 
@@ -152,7 +150,10 @@ slc_value %>%
               opacity = 1)
 ```
 
-The two census tracts with `NA` values are the airport on the west side and the University of Utah on the east side. You can very obviously see the east-to-west gradient that comes as no surprise to us locals, and that priciest tract is up against one of the canyons with beautiful views. But mainly please notice with what ease I made this interactive map!
+* The two census tracts with `NA` values are the airport on the west side and the University of Utah on the east side. You can very obviously see the east-to-west gradient 
+* and that priciest tract is up against one of the canyons with beautiful views. But mainly please notice with what ease I made this interactive map!
+
+## Los Angeles example 
 
 
 ```{r orange_county}
@@ -161,7 +162,7 @@ library(tidyverse)
 library(sf)
 
 # Get dataset with geometry set to TRUE
-orange_value <- get_acs(geography = "tract", state = "CA", 
+los_ang_value <- get_acs(geography = "tract", state = "CA", 
                     county = "Los Angeles", 
                     variables = "B25077_001", 
                     geometry = TRUE)
